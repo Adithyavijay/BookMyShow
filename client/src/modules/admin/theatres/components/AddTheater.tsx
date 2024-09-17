@@ -17,7 +17,7 @@ const AddTheaterModal: React.FC<AddTheaterModalProps> = ({ onClose, onAddTheater
     const [formData, setFormData] = useState<AddTheaterData>({
         name: '',
         location: '',
-        capacity: 0
+        capacity: 100
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,9 +66,8 @@ const AddTheaterModal: React.FC<AddTheaterModalProps> = ({ onClose, onAddTheater
                             type="number"
                             id="capacity"
                             name="capacity"
-                            value={formData.capacity}
-                            onChange={handleChange}
-                            required
+                            value={100}
+                            disabled={true}
                             className="w-full p-2 border rounded"
                         />
                     </div>

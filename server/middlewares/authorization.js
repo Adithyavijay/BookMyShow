@@ -18,7 +18,6 @@ exports.verifyUser= (req, res, next) => {
     if (!decoded) {
       return res.status(401).json({ success: false, message: 'Invalid token' });
     } 
-    console.log(decoded)
 
     // Attach the user ID to the request object
     req.user = { id: decoded.userId };

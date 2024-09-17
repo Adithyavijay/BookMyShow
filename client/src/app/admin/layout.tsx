@@ -8,11 +8,11 @@ interface AdminLayoutProps {
 
  function AdminLayout({ children }: AdminLayoutProps): JSX.Element {
   return (
-    <div className="admin-layout">
+    <div className=" h-screen w-full overflow-hidden">
       <Navbar />
-      <div className="admin-sidebar">
+      <div className="admin-sidebar ">
         <Sidebar />
-        <main className="pl-[300px] pt-[50px] pr-[50px]">{children}</main>
+        <main className="pl-[300px] pt-[96px] pr-[50px] overflow-y-hidden ">{children}</main>
       </div>
     </div>
   );

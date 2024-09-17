@@ -1,8 +1,11 @@
-import React from 'react'
+import React from 'react';
+import Tickets from '@/modules/admin/tickets/Tickets';
 
 const page = () => {
   return (
-    <div>tickets</div>
+    <div>
+      <Tickets/>
+    </div>
   )
 }
 

@@ -22,6 +22,14 @@ interface Theater {
 type ScreenType = '2D' | '3D';
 type CancellationType = 'Cancellation Available' | 'Non-Cancellable';
 
+const TIME_SLOTS = [
+  { label: 'Morning (9:00 AM - 11:59 AM)', start: '09:00', end: '11:59' },
+  { label: 'Afternoon (12:00 PM - 3:59 PM)', start: '12:00', end: '15:59' },
+  { label: 'Evening (4:00 PM - 7:59 PM)', start: '16:00', end: '19:59' },
+  { label: 'Night (8:00 PM - 11:59 PM)', start: '20:00', end: '23:59' },
+];
+
+
 const AddShowtime: React.FC<AddShowTimeProps> = ({ onClose }) => {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
@@ -34,17 +42,79 @@ const AddShowtime: React.FC<AddShowTimeProps> = ({ onClose }) => {
   const [cancellable, setCancellable] = useState<CancellationType>('Cancellation Available');
   const [loading, setLoading] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [existingShowtimes, setExistingShowtimes] = useState<any[]>([]);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState('');
+  const [MinDate,setMinDate]=useState('')
 
   const api = process.env.API_BASE_URL ;
   useEffect(() => {
     fetchMovies();
+    setMinDate(getTodayDate());
   }, []);
 
+  const getTodayDate = () => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  };
+
   useEffect(() => {
-    if (selectedMovie && date && startTime) {
-      calculateEndTime();
+    if (selectedMovie && selectedTheater && date) {
+      fetchExistingShowtimes();
     }
-  }, [selectedMovie, date, startTime]);
+  }, [selectedMovie, selectedTheater, date]);
+
+  const fetchExistingShowtimes = async () => {
+    try {
+      const response = await axios.get(`${api}/admin/showtimes-check`, {
+        params: { movieId: selectedMovie?._id, theaterId: selectedTheater, date }
+      });
+      setExistingShowtimes(response.data);
+    } catch (err) {
+      console.error("Error fetching existing showtimes:", err);
+    } 
+  };
+  
+
+  const handleTimeSlotChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const slot = TIME_SLOTS.find(slot => slot.label === e.target.value);
+    if (slot) {
+      setSelectedTimeSlot(e.target.value);
+      setStartTime(slot.start);
+      calculateEndTime(slot.start);
+    }
+  };
+
+  const calculateEndTime = (start: string) => {
+    if (selectedMovie && date && start) {
+      const startDateTime = new Date(`${date}T${start}`);
+      const endDateTime = new Date(startDateTime.getTime() + selectedMovie.duration * 60000);
+      setEndTime(endDateTime.toTimeString().slice(0, 5));
+    }
+  };
+
+
+  const isTimeSlotAvailable = (slot: typeof TIME_SLOTS[0]) => {
+    if (!existingShowtimes.length) return true;
+    
+    const now = new Date();
+    const slotStart = new Date(`${date}T${slot.start}`);
+    const slotEnd = new Date(`${date}T${slot.end}`);
+    
+    // Check if the slot is in the past for today's date
+    if (date === getTodayDate() && slotEnd <= now) {
+      return false;
+    }
+    
+    return !existingShowtimes.some(showtime => {
+      const showtimeStart = new Date(showtime.startTime);
+      const showtimeEnd = new Date(showtime.endTime);
+      return (
+        (slotStart >= showtimeStart && slotStart < showtimeEnd) ||
+        (slotEnd > showtimeStart && slotEnd <= showtimeEnd) ||
+        (slotStart <= showtimeStart && slotEnd >= showtimeEnd)
+      );
+    });
+  };
 
   const fetchMovies = async () => {
     setLoading(true);
@@ -66,13 +136,6 @@ const AddShowtime: React.FC<AddShowTimeProps> = ({ onClose }) => {
     setSelectedTheater('');
   };
 
-  const calculateEndTime = () => {
-    if (selectedMovie && date && startTime) {
-      const startDateTime = new Date(`${date}T${startTime}`);
-      const endDateTime = new Date(startDateTime.getTime() + selectedMovie.duration * 60000);
-      setEndTime(endDateTime.toTimeString().slice(0, 5));
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -160,18 +223,41 @@ const AddShowtime: React.FC<AddShowTimeProps> = ({ onClose }) => {
                 id="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
+                min={getTodayDate()} // Set minimum date to today
                 className='border rounded-md px-3 py-2' />
             </div>
 
             {/* Start Time Picker */}
             <div className='flex flex-col'>
-              <label htmlFor="startTime" className='font-medium text-sm mb-1'>Select Start Time</label>
+              <label htmlFor="timeSlot" className='font-medium text-sm mb-1'>Select Time Slot</label>
+              <select
+                id="timeSlot"
+                value={selectedTimeSlot}
+                onChange={handleTimeSlotChange}
+                className='border rounded-md px-3 py-2'
+                disabled={!selectedMovie || !selectedTheater || !date}>
+                <option value="">Select Time Slot</option>
+                {TIME_SLOTS.map((slot, index) => (
+                  <option 
+                    key={index} 
+                    value={slot.label}
+                    disabled={!isTimeSlotAvailable(slot)}
+                  >
+                    {slot.label} {!isTimeSlotAvailable(slot) && '(Not Available)'}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Start Time Display */}
+            <div className='flex flex-col'>
+              <label htmlFor="startTime" className='font-medium text-sm mb-1'>Start Time</label>
               <input
                 type="time"
                 id="startTime"
                 value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                className='border rounded-md px-3 py-2' />
+                readOnly
+                className='border rounded-md px-3 py-2 bg-gray-100' />
             </div>
 
             {/* End Time Display */}
@@ -184,6 +270,7 @@ const AddShowtime: React.FC<AddShowTimeProps> = ({ onClose }) => {
                 readOnly
                 className='border rounded-md px-3 py-2 bg-gray-100' />
             </div>
+
 
             {/* Screen Type Selection */}
             <div className='flex flex-col'>
@@ -225,8 +312,8 @@ const AddShowtime: React.FC<AddShowTimeProps> = ({ onClose }) => {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={isSubmitting}
-              className='bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200 flex justify-center items-center'
+              disabled={isSubmitting || !selectedTimeSlot}
+              className='bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200 flex justify-center items-center disabled:bg-gray-400'
             >
               {isSubmitting ? (
                 <ClipLoader color="#ffffff" size={20} />

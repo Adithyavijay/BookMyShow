@@ -5,6 +5,7 @@ const Showtime = require("../models/showtime");
 const User = require("../models/user");
 const Ticket=require('../models/ticket');
 const qrcode= require('qrcode');
+require('dotenv').config();
 
 const razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
@@ -12,7 +13,7 @@ const razorpay = new Razorpay({
 });
 
 exports.createOrder = async (req, res) => {
-  console.log(req.user.id)
+  
     try {
         const options = {
             amount: req.body.amount,
@@ -21,7 +22,6 @@ exports.createOrder = async (req, res) => {
         };
 
         const order = await razorpay.orders.create(options);
-        console.log(order);
         res.json({ orderId: order.id });
     } catch (error) {
         console.error("Error creating order:", error);
@@ -75,7 +75,6 @@ exports.verifyOrder = async (req, res) => {
             // Save the updated showtime
             await showtime.save();
 
-            console.log("payment is successful");
 
             const totalPrice = seats.length * showtime.price ;
 

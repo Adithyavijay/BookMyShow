@@ -29,17 +29,19 @@ const SeatSelection: React.FC<SeatSelectionProps> = ({ showtimeId, quantity }) =
   const [totalPrice, setTotalPrice] = useState(0);
   const router = useRouter();
   const isRazorpayLoaded = useRazorpay();
-
+  console.log(totalPrice*quantity)
   useEffect(() => {
     fetchSeats();
   }, [showtimeId]);
+
 
   const fetchSeats = async () => {
     setIsLoading(true);
     try {
       const response = await axios.get(`http://localhost:5000/api/user/seats/${showtimeId}`);
       setSeats(response.data[0].seats); 
-      console.log(response.data)
+      console.log(response.data[0].price)
+     
       // Assuming the price is returned from the API. If not, you'll need to set it manually or fetch it separately.
       setTotalPrice(response.data[0].price || 100); // Default to 100 if price is not provided
     } catch (error) {
@@ -65,15 +67,15 @@ const SeatSelection: React.FC<SeatSelectionProps> = ({ showtimeId, quantity }) =
     setIsLoading(true);
     try {
       const orderResponse = await axios.post('http://localhost:5000/api/user/create-order', {
-        amount: totalPrice * 100,
+        amount: totalPrice * quantity *100,
         showtimeId,
         seats: selectedSeats,
       });
 
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: totalPrice * quantity,
-        currency: "INR",
+        amount: totalPrice * quantity *100,
+        currency: "INR", 
         name: "Movie Ticket Booking",
         description: "Payment for movie tickets",
         order_id: orderResponse.data.orderId,

@@ -2,7 +2,10 @@ const movieRepository = require('../repositories/movie-repository')
 const path = require('path');
 const fs = require('fs').promises;
 const mongoose = require('mongoose');
-const movie = require('../models/movie');
+const Movie = require('../models/movie');
+const User =require('../models/user')
+const Showtime = require('../models/showtime');
+const Ticket = require('../models/ticket');
 
 exports.addMovie = async (req, res) => {
   try {
@@ -57,6 +60,7 @@ exports.addMovie = async (req, res) => {
 
 exports.getAllMovies = async (req, res) => {
   try {
+    
     const movies = await movieRepository.findAll()
     
     res.json(movies);
@@ -75,12 +79,11 @@ exports.getMovieById = async (req, res) => {
   }
 
   try {
-    const movie = await movieRepository.findById(id);
+    const movie = await movieRepository.findById(id)
 
     if (!movie) {
       return res.status(404).json({ message: 'Movie not found in database' });
     }
-    console.log(movie)
     res.status(200).json(movie);
   } catch (err) {
     console.log(err);
@@ -157,7 +160,7 @@ exports.deleteMovie = async (req, res) => {
   const id = req.params.movieId;
 
   try {
-    const movie = await movieRepository.findById(id);
+    const movie = await Movie.findById(id);
     if (!movie) {
       return res.status(404).json({ message: "Movie not found" });
     }
@@ -196,12 +199,100 @@ exports.deleteMovie = async (req, res) => {
       }
     }
 
-    // Delete the movie from the database
-    await movieRepository.delete(id);
+    // Find and delete associated showtimes
+    const showtimes = await Showtime.find({ movie: id });
+    for (const showtime of showtimes) {
+      // Delete tickets associated with this showtime
+      await Ticket.deleteMany({ showtime: showtime._id });
+      // Delete the showtime
+      await Showtime.findByIdAndDelete(showtime._id);
+    }
 
-    res.status(200).json({ message: "Movie deleted successfully" });
+    // Delete the movie from the database
+    await Movie.findByIdAndDelete(id);
+
+    res.status(200).json({ message: "Movie and associated data deleted successfully" });
   } catch (error) {
     console.error('Error deleting movie:', error);
-    res.status(500).json({ message: "Error deleting movie", error: error.message });
+    res.status(500).json({ message: "Error deleting movie and associated data", error: error.message });
   }
 };
+
+exports.addReview = async (req, res) => {
+  const { id } = req.params; // Movie ID
+  const { text, rating, userId } = req.body;
+
+  try {
+      // Find the movie
+      const movie = await movieRepository.findById(id)
+      if (!movie) {
+          return res.status(404).json({ message: 'Movie not found' });
+      }
+
+      // Find the user
+      const user = await User.findById(userId);
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Check if user has already reviewed this movie
+      const existingReviewIndex = movie.reviews.findIndex(review => review.user.toString() === userId);
+      const existingRatingIndex = movie.ratings.findIndex(rating => rating.user.toString() === userId);
+
+      if (existingReviewIndex !== -1) {
+          // Update existing review
+          movie.reviews[existingReviewIndex].text = text;
+          movie.reviews[existingReviewIndex].date = new Date();
+      } else {
+          // Add new review
+          movie.reviews.push({
+              user: userId,
+              text: text,
+              date: new Date()
+          });
+      }
+
+      if (existingRatingIndex !== -1) {
+          // Update existing rating
+          movie.ratings[existingRatingIndex].value = rating;
+      } else {
+          // Add new rating
+          movie.ratings.push({
+              user: userId,
+              value: rating
+          });
+      }
+
+      // Recalculate average rating
+      const totalRating = movie.ratings.reduce((sum, rating) => sum + rating.value, 0);
+      movie.averageRating = totalRating / movie.ratings.length;
+
+      await movie.save();
+
+      res.status(200).json({ message: 'Review added successfully', movie });
+  } catch (error) {
+      console.error('Error adding review:', error);
+      res.status(500).json({ message: 'Error adding review', error: error.message });
+  }
+} ;
+
+exports.searchMovies= async(req,res)=>{
+  try {
+    const { query } = req.query;
+    if (!query) {
+      return res.status(400).json({ message: 'Search query is required' });
+    }
+
+    const movies = await Movie.find({
+      $or: [
+        { title: { $regex: query, $options: 'i' } },
+        { genre: { $regex: query, $options: 'i' } },
+      ]
+    }).limit(10);
+
+    res.json(movies);
+  } catch (error) {
+    console.error('Error searching movies:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}

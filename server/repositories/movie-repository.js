@@ -2,7 +2,14 @@ const Movie = require('../models/movie')
 
 class MovieRepository {
     async findById(id) {
-        return await Movie.findById(id);
+        return await Movie.findById(id) .populate({
+            path: 'reviews.user',
+            select: 'username profilePicture'
+        })
+        .populate({
+            path: 'ratings.user',
+            select: 'username'
+        });
     }
 
     async create(movieData) {

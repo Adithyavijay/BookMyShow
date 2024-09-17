@@ -19,6 +19,9 @@
   });
 
   showtimeSchema.virtual('availableSeats').get(function() {
+    if (!this.seats || !Array.isArray(this.seats)) {
+      return this.totalSeats; // Return total seats if seats array is not defined
+    }
     return this.totalSeats - this.seats.filter(seat => seat.isBooked).length;
   });
 

@@ -1,8 +1,11 @@
+import Users from '@/modules/admin/users/components/users'
 import React from 'react'
 
 const page = () => {
   return (
-    <div>users details</div>
+    <div>
+      <Users/>
+    </div>
   )
 }
 

@@ -8,11 +8,15 @@ type CastMember = {
     value: number;
   };
   
-  type Review = {
-    user: string; // Assuming ObjectId is represented as a string
+  export interface Review {
+    user: {
+      username: string;
+      profilePicture: string;
+    };
     text: string;
     date: string;
-  };
+  }
+
   
   export interface Movie {
     _id: string; // MongoDB ObjectId

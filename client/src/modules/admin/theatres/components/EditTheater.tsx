@@ -1,97 +1,134 @@
-// components/AddTheaterModal.tsx
-'use client';
-import React, { useEffect, useState } from "react";
-import { EditTheaterData } from "../types/type";
-import axios from 'axios';
+// components/EditTheaterModal.tsx
 
+'use client';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { FaTimes } from 'react-icons/fa';
+import { Theater } from '../types/type';
 
 interface EditTheaterModalProps {
-    onClose: () => void;
-    id:string;
+  onClose: () => void;
+  id: string;
+  onSuccess : ()=>void;
 }
 
+const EditTheaterModal: React.FC<EditTheaterModalProps> = ({ onClose, id ,onSuccess }) => {
+  const [theater, setTheater] = useState<Theater | null>(null);
+  const [name, setName] = useState('');
+  const [location, setLocation] = useState('');
+  const [capacity, setCapacity] = useState('');
+  const [error, setError] = useState('');
 
-const EditTheaterModal: React.FC<EditTheaterModalProps> = ({onClose,id}) => {
-    const [formData, setFormData] = useState<EditTheaterData>({
-        name: '',
-        location: '',
-        capacity: 0
-    }); 
-    const api = process.env.API_BASE_URL;
+  useEffect(() => {
+    
+    fetchTheater();
+  }, [id]);
+ 
+  const fetchTheater = async () => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/admin/get-theater-by-id/${id}`);
+      const fetchedTheater = response.data.theater;
+      setTheater(fetchedTheater);
+      setName(fetchedTheater.name);
+      setLocation(fetchedTheater.location);
+    } catch (error) {
+      console.error('Error fetching theater:', error);
+      setError('Failed to fetch theater data');
+    }
+  };
 
-    useEffect(()=>{
-        const fetchTheaters = async () => {
-            console.log('hii')
-            try {
-              const response = await axios.get(`${api}/admin/get-theater-by-id/${id}`);
-              console.log(response)
-              setFormData(response.data.theaters);
-            } catch (error) {
-              console.error('Error fetching theaters:', error);
-            }
-          };
-          fetchTheaters();
-    },[])
-  
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: name === 'capacity' ? parseInt(value) : value }));
-    };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => { 
+    
+    e.preventDefault();
+    try {
+      const response = await axios.put(`http://localhost:5000/api/admin/update-theater/${id}`, {
+        name,
+        location
+      });
+      if (response.status === 200) {
         onClose();
-    };
+        onSuccess();
+        // You might want to add a success message or refresh the theater list here
+      }
+    } catch (error) {
+      console.error('Error updating theater:', error);
+      setError('Failed to update theater');
+    }
+  };
 
-    return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white rounded-lg w-full max-w-md">
-                <h2 className="text-xl font-bold p-4 border-b">Edit Theater</h2>
-                <form onSubmit={handleSubmit} className="p-4">
-                    <div className="mb-4">
-                        <label htmlFor="name" className="block mb-2 font-bold">Name</label>
-                        <input
-                            type="text"
-                            id="name"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            required
-                            className="w-full p-2 border rounded"
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <label htmlFor="location" className="block mb-2 font-bold">Location</label>
-                        <input
-                            type="text"
-                            id="location"
-                            name="location"
-                            value={formData.location}
-                            onChange={handleChange}
-                            required
-                            className="w-full p-2 border rounded"
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <label htmlFor="capacity" className="block mb-2 font-bold">Capacity</label>
-                        <input
-                            type="number"
-                            id="capacity"
-                            name="capacity"
-                            value={formData.capacity}
-                            onChange={handleChange}
-                            required
-                            className="w-full p-2 border rounded"
-                        />
-                    </div>
-                    <div className="flex justify-end">
-                        <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2">Add Theater</button>
-                        <button type="button" onClick={onClose} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">Cancel</button>
-                    </div>
-                </form>
-            </div>
+  if (!theater) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+      <div className="bg-white rounded-lg p-8 max-w-md w-full">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-indigo-800">Edit Theater</h2>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+            <FaTimes size={24} />
+          </button>
         </div>
-    );
+        {error && <p className="text-red-500 mb-4">{error}</p>}
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+              Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full p-2 border rounded focus:ring-indigo-500 focus:border-indigo-500"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
+              Location
+            </label>
+            <input
+              type="text"
+              id="location"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              className="w-full p-2 border rounded focus:ring-indigo-500 focus:border-indigo-500"
+              required
+            />
+          </div>
+          <div className="mb-6">
+            <label htmlFor="capacity" className="block text-sm font-medium text-gray-700 mb-1">
+              Capacity
+            </label>
+            <input
+              type="number"
+              id="capacity"
+              value={100}
+              className="w-full p-2 border rounded focus:ring-indigo-500 focus:border-indigo-500"
+              disabled={true}
+            />
+          </div>
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={onClose}
+              className="mr-4 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Update Theater
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 };
 
 export default EditTheaterModal;

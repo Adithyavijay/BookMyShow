@@ -32,6 +32,8 @@ const AddMovie: React.FC<AddMovieProps> = ({ isOpen, onClose, onAddMovie }) => {
   const [isAddCastOpen, setIsAddCastOpen] = useState(false);
   const [theaters,setTheaters]=useState<Theater[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [posterPreview, setPosterPreview] = useState<string | null>(null);
+  const [photosPreviews, setPhotosPreviews] = useState<string[]>([]);
   const api = process.env.API_BASE_URL;
   useEffect(()=>{
     fetchTheaters();
@@ -54,10 +56,13 @@ const AddMovie: React.FC<AddMovieProps> = ({ isOpen, onClose, onAddMovie }) => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, files } = e.target;
-    if (name === 'poster' && files) {
+    if (name === 'poster' && files && files[0]) {
       setFormData(prev => ({ ...prev, [name]: files[0] }));
+      setPosterPreview(URL.createObjectURL(files[0]));
     } else if (name === 'photos' && files) {
-      setFormData(prev => ({ ...prev, [name]: Array.from(files) }));
+      const photoFiles = Array.from(files);
+      setFormData(prev => ({ ...prev, [name]: photoFiles }));
+      setPhotosPreviews(photoFiles.map(file => URL.createObjectURL(file)));
     }
   };
 // function to handle the values in theater 
@@ -184,6 +189,11 @@ const handleAddCastModal = ( )=>{
               required
               className="w-full p-2 border rounded"
             />
+               {posterPreview && (
+              <div className="mt-2">
+                <img src={posterPreview} alt="Poster preview" className="w-32 h-auto" />
+              </div>
+            )}
           </div>
           <div className="mb-4">
             <label htmlFor="photos" className="block mb-2 font-bold">Photos</label>
@@ -196,6 +206,13 @@ const handleAddCastModal = ( )=>{
               multiple
               className="w-full p-2 border rounded"
             />
+              {photosPreviews.length > 0 && (
+              <div className="mt-2 flex flex-wrap">
+                {photosPreviews.map((preview, index) => (
+                  <img key={index} src={preview} alt={`Photo preview ${index + 1}`} className="w-24 h-24 object-cover m-1" />
+                ))}
+              </div>
+            )}
           </div>
         
           <div className="flex justify-end p-4 border-t">

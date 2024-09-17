@@ -19,17 +19,20 @@ const MAX_CAST_MEMBERS = 5;
 const AddCast: React.FC<AddCastProps> = ({ isOpen, onClose, onAddCast, initialCast }) => {
   const [castMembers, setCastMembers] = useState<CastMember[]>([{ castName: '', castPhoto: null }]);
   const [errors, setErrors] = useState<CastError[]>([{ name: false, photo: false }]);
-  console.log(initialCast)
+  const [photoPreviews, setPhotoPreviews] = useState<(string | null)[]>([null]);
+
   useEffect(() => {
     if (isOpen) {
       if (initialCast && initialCast.length > 0) {
-        // Editing scenario: populate with initial cast data
         setCastMembers(initialCast);
         setErrors(initialCast.map(() => ({ name: false, photo: false })));
+        setPhotoPreviews(initialCast.map(member => 
+          typeof member.castPhoto === 'string' ? `http://localhost:5000${member.castPhoto}` : null
+        ));
       } else {
-        // Adding scenario: start with one empty cast member
         setCastMembers([{ castName: '', castPhoto: null }]);
         setErrors([{ name: false, photo: false }]);
+        setPhotoPreviews([null]);
       }
     }
   }, [isOpen, initialCast]);
@@ -38,12 +41,20 @@ const AddCast: React.FC<AddCastProps> = ({ isOpen, onClose, onAddCast, initialCa
     if (castMembers.length < MAX_CAST_MEMBERS) {
       setCastMembers([...castMembers, { castName: '', castPhoto: null }]);
       setErrors([...errors, { name: false, photo: false }]);
+      setPhotoPreviews([...photoPreviews, null]);
     }
   };
 
   const handleChange = (index: number, field: 'castName' | 'castPhoto', value: string | File | null) => {
     if (field === 'castName') errors[index].name = false;
-    if (field === 'castPhoto') errors[index].photo = false;
+    if (field === 'castPhoto') {
+      errors[index].photo = false;
+      if (value instanceof File) {
+        const newPreviews = [...photoPreviews];
+        newPreviews[index] = URL.createObjectURL(value);
+        setPhotoPreviews(newPreviews);
+      }
+    }
   
     const updatedCastMembers = castMembers.map((member, i) => 
       i === index ? { ...member, [field]: value } : member
@@ -54,8 +65,10 @@ const AddCast: React.FC<AddCastProps> = ({ isOpen, onClose, onAddCast, initialCa
   const handleRemoveMember = (index: number) => {
     const updatedCastMembers = castMembers.filter((_, i) => i !== index);
     const updatedErrors = errors.filter((_, i) => i !== index);
+    const updatedPreviews = photoPreviews.filter((_, i) => i !== index);
     setCastMembers(updatedCastMembers.length > 0 ? updatedCastMembers : [{ castName: '', castPhoto: null }]);
     setErrors(updatedErrors.length > 0 ? updatedErrors : [{ name: false, photo: false }]);
+    setPhotoPreviews(updatedPreviews.length > 0 ? updatedPreviews : [null]);
   };
 
   const handleSubmit = () => {  
@@ -97,13 +110,13 @@ const AddCast: React.FC<AddCastProps> = ({ isOpen, onClose, onAddCast, initialCa
                 type="file"
                 accept="image/*"
                 onChange={(e) => handleChange(index, 'castPhoto', e.target.files?.[0] || null)}
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded mb-2"
               />
               {errors[index]?.photo && (
-                <p className="text-red-500 text-sm mt-1">Please select a photo</p>
+                <p className="text-red-500 text-sm mb-2">Please select a photo</p>
               )}
-              {member.castPhoto && typeof member.castPhoto === 'string' && (
-                <img src={"http://localhost:5000"+member.castPhoto} alt={`Cast member ${index + 1}`} className="mt-2 w-20 h-20 object-cover" />
+              {photoPreviews[index] && (
+                <img src={photoPreviews[index] || ''} alt={`Cast member ${index + 1}`} className="mt-2 w-20 h-20 object-cover" />
               )}
               {index > 0 && (
                 <button
@@ -142,5 +155,4 @@ const AddCast: React.FC<AddCastProps> = ({ isOpen, onClose, onAddCast, initialCa
   );
 };
 
-export default AddCast; 
- 
+export default AddCast;

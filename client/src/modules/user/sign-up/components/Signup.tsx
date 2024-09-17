@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import OtpInput from 'react-otp-input';
 import toast, { Toaster } from 'react-hot-toast';
 import ClipLoader from "react-spinners/ClipLoader";
+import { userState } from '@/atoms/modalAtom';
 
 axios.defaults.withCredentials = true;
 
@@ -14,6 +15,7 @@ const GoogleAuthModal: React.FC = () => {
     const modalRef = useRef<HTMLDivElement>(null);
     const [showModal, setShowModal] = useRecoilState(signupModalState);
     const [showOtpInput, setShowOtpInput] = useState(false);
+    const [, setUser] = useRecoilState(userState);
     const [otp, setOtp] = useState('');
     const [loading, setLoading] = useState(false);
     const api = process.env.API_BASE_URL;
@@ -37,15 +39,15 @@ const GoogleAuthModal: React.FC = () => {
         if (credentialResponse.credential) {
             setLoading(true);
             try {
-                const response = await axios.post(`${api}/admin/auth/google-callback`, {
+                const response = await axios.post(`${api}/user/auth/google-callback`, {
                     credential: credentialResponse.credential
                 });
                 console.log(response.data)
                 if (response.data.user.requireTwoFactorAuth) {
-                    localStorage.setItem('userInfo', response.data.user);
+                   
                     setShowOtpInput(true); 
                     toast.success('OTP sent to your email!');
-                } else {
+                } else {    
                     setShowModal(false);
                 }
             } catch (err) {
@@ -66,13 +68,14 @@ const GoogleAuthModal: React.FC = () => {
         setLoading(true);
         try {
             const userId = localStorage.getItem('userId');
-            const response = await axios.post(`${api}/admin/auth/verify-otp`, {
-                userId,
+            const response = await axios.post(`${api}/user/auth/verify-otp`, {
                 otp
             });
+            console.log('after otp submit : ', response.data)
+            setUser(response.data.user)
             toast.success('OTP verified successfully!');
+            localStorage.setItem('userInfo', JSON.stringify(response.data.user));
             setShowModal(false);
-            router.push('/'); // Adjust this route as needed
         } catch (err) {
             console.error(err);
             toast.error('Invalid OTP. Please try again.');
@@ -81,9 +84,9 @@ const GoogleAuthModal: React.FC = () => {
         }
     };
 
-    if (!showModal) return null;
+    // if (!showModal) return null;
 
-    return (
+    return !showModal ? <></>:  (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div ref={modalRef} className="bg-white rounded-lg p-8 max-w-md w-full transform animate-slideIn">
                 <Toaster position="top-center" reverseOrder={false} />

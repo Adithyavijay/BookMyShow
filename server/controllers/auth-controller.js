@@ -3,6 +3,9 @@ const User = require('../models/user');
 const { generateAccessToken, encryptToken } = require('../utils/jwt-utils');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
+const jwt = require('jsonwebtoken')
+
+
 require('dotenv').config();
 
 
@@ -64,7 +67,7 @@ exports.googleCallback = async (req, res) => {
         try{
             await sendOTPEmail(user.email, otp);
         }catch(err){
-            console.log('send err ',err)
+            console.err('send err ',err)
         } 
 
         req.session.save((err) => {
@@ -78,6 +81,7 @@ exports.googleCallback = async (req, res) => {
                     email: user.email,
                     id: user._id,
                     name: user.username,
+                    profilePicture:user.profilePicture,
                     requireTwoFactorAuth: true 
                 }
             });
@@ -90,7 +94,6 @@ exports.googleCallback = async (req, res) => {
 };
 
 exports.verifyEmailOTP = async (req, res) => { 
-    console.log('session',req.session.otp)
     const { otp } = req.body;
 
     if (!otp) {
@@ -140,11 +143,95 @@ exports.verifyEmailOTP = async (req, res) => {
             user: {
                 id: user._id,
                 email: user.email,
-                name: user.username
+                name: user.username,
+                profilePicture:user.profilePicture  
             }
         });
     } catch (error) {
         console.error('Error verifying OTP:', error);
         res.status(500).json({ success: false, message: 'Failed to verify OTP' });
     }
-};
+}; 
+
+// controller logic to handle logout
+
+exports.logout = async (req, res) => {
+    try {
+        // Clear the authentication cookie
+        res.clearCookie('encryptedToken', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict'
+        });
+
+        // Send response
+        res.status(200).json({ success: true, message: 'Logged out successfully' });
+    } catch (error) {
+        console.error('Logout error:', error);
+        res.status(500).json({ success: false, message: 'Error logging out' });
+    }
+}; 
+
+exports.adminLogin = async(req,res)=>{
+    const { email, password } = req.body;
+
+    // Check if email and password are provided
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
+    }
+  
+    // Verify credentials
+    if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
+      // Create a JWT token
+      const token = jwt.sign(
+        { email: process.env.ADMIN_EMAIL },
+        process.env.JWT_SECRET,
+        { expiresIn: '30d' } 
+      );
+  
+      // Set the token as an HTTP-only cookie
+      res.cookie('adminToken', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+        sameSite: 'strict',
+        maxAge: 30* 24* 60 * 60 * 1000, // 30 days
+      });
+  
+      return res.status(200).json({ token });
+    } else {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+} 
+
+exports.adminLogout = async (req, res) => {
+    try {
+        // Clear the authentication cookie
+        res.clearCookie('adminToken', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict'
+        });
+
+        // Send response
+        res.status(200).json({ success: true, message: 'Logged out successfully' });
+    } catch (error) {
+        console.error('Logout error:', error);
+        res.status(500).json({ success: false, message: 'Error logging out' });
+    }
+};  
+exports.checkAuth = async(req,res)=>{
+    const adminToken = req.cookies.adminToken; 
+   
+    if (adminToken) {
+      // Verify the token 
+      try {
+        jwt.verify(adminToken, process.env.JWT_SECRET); 
+        res.json({ isAuthenticated: true });
+      } catch (error) {
+        console.log(error)
+        res.json({ isAuthenticated: false });
+      }
+    } else {
+      res.json({ isAuthenticated: false });
+    }
+}

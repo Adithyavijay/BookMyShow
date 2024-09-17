@@ -90,8 +90,8 @@ const BookingPage: React.FC<BookingPageProps> = ({ id }) => {
         let timeMatch = true;
         if (showTimings === "morning") timeMatch = time >= 6 && time < 12;
         else if (showTimings === "afternoon")
-            timeMatch = time >= 12 && time < 17;
-        else if (showTimings === "evening") timeMatch = time >= 17 && time < 21;
+            timeMatch = time >= 12 && time < 16;
+        else if (showTimings === "evening") timeMatch = time >= 16 && time < 21;
         else if (showTimings === "night") timeMatch = time >= 21 || time < 6;
 
         let priceMatch = true;
@@ -141,9 +141,9 @@ const BookingPage: React.FC<BookingPageProps> = ({ id }) => {
             case "morning":
                 return "Morning (6 AM - 11:59 AM)";
             case "afternoon":
-                return "Afternoon (12 PM - 4:59 PM)";
+                return "Afternoon (12 PM - 3:59 PM)";
             case "evening":
-                return "Evening (5 PM - 8:59 PM)";
+                return "Evening (4 PM - 8:59 PM)";
             case "night":
                 return "Night (9 PM - 5:59 AM)";
             default:

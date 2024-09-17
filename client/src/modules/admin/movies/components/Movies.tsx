@@ -5,6 +5,8 @@ import AddMovie from "./AddMovie";
 import EditMovie from "./EditMovie";
 import DeleteMovie from "./DeleteMovie";
 import { toast, Toaster } from "react-hot-toast";
+import Image from 'next/image';
+import { FaSearch, FaPlus, FaEdit, FaTrash, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 interface Movie {
   _id: string;
@@ -28,6 +30,8 @@ const Movies: React.FC = () => {
   const [editModal, setEditModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [selectedMovieId, setSelectedMovieId] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [moviesPerPage] = useState(5);
 
   const api = process.env.API_BASE_URL;
   const baseApi = process.env.BASE_URL;
@@ -48,6 +52,7 @@ const Movies: React.FC = () => {
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
+    setCurrentPage(1);
   };
 
   const createFormData = (movieData: MovieFormData): FormData => {
@@ -122,73 +127,122 @@ const Movies: React.FC = () => {
     movie.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Pagination
+  const indexOfLastMovie = currentPage * moviesPerPage;
+  const indexOfFirstMovie = indexOfLastMovie - moviesPerPage;
+  const currentMovies = filteredMovies.slice(indexOfFirstMovie, indexOfLastMovie);
+  const totalPages = Math.ceil(filteredMovies.length / moviesPerPage);
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
   return (
-    <div className="p-8 bg-gray-100">
+    <div className="p-8 bg-gradient-to-br from-purple-100 to-indigo-100 min-h-screen">
       <Toaster />
-      <div className="flex justify-between mb-6">
-        <input
-          type="text"
-          placeholder="Search movies..."
-          value={searchTerm}
-          onChange={handleSearch}
-          className="p-2 border rounded w-64"
-        />
-        <button
-          onClick={() => setIsAddMovieOpen(true)}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          Add Movie
-        </button>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-indigo-800 mb-4">Movies Management</h1>
+        <div className="flex justify-between items-center">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search movies..."
+              value={searchTerm}
+              onChange={handleSearch}
+              className="p-2 pl-10 border rounded-full w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          </div>
+          <button
+            onClick={() => setIsAddMovieOpen(true)}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition duration-300 ease-in-out flex items-center"
+          >
+            <FaPlus className="mr-2" /> Add Movie
+          </button>
+        </div>
       </div>
-      <table className="w-full bg-white shadow-md rounded">
-        <thead className="bg-gray-200">
-          <tr>
-            <th className="p-3 text-left">Poster</th>
-            <th className="p-3 text-left">Title</th>
-            <th className="p-3 text-left">Genre</th>
-            <th className="p-3 text-left">Release Date</th>
-            <th className="p-3 text-left">Director</th>
-            <th className="p-3 text-left">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredMovies.map((movie) => (
-            <tr key={movie._id} className="border-b">
-              <td className="p-3">
-                <img
-                  src={`http://localhost:5000${movie.poster}`}
-                  alt={movie.title}
-                  className="w-16 h-auto"
-                />
-              </td>
-              <td className="p-3">{movie.title}</td>
-              <td className="p-3">{movie.genre}</td>
-              <td className="p-3">{movie.releaseDate}</td>
-              <td className="p-3">{movie.director}</td>
-              <td className="p-3">
-                <button
-                  onClick={() => {
-                    setEditModal(true);
-                    setSelectedMovieId(movie._id);
-                  }}
-                  className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 mr-2"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => {
-                    setDeleteModal(true);
-                    setSelectedMovieId(movie._id);
-                  }}
-                  className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                >
-                  Delete
-                </button>
-              </td>
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        <table className="w-full">
+          <thead className="bg-indigo-600 text-white">
+            <tr>
+              <th className="p-3 text-left">Photo</th>
+              <th className="p-3 text-left">Title</th>
+              <th className="p-3 text-left">Genre</th>
+              <th className="p-3 text-left">Release Date</th>
+              <th className="p-3 text-left">Director</th>
+              <th className="p-3 text-left">Actions</th>
             </tr>
+          </thead>
+          <tbody>
+            {currentMovies.map((movie) => (
+              <tr key={movie._id} className="border-b hover:bg-gray-50">
+                <td className="p-3">
+                  <div className="relative w-24 h-28 overflow-hidden rounded-lg">
+                    <Image
+                      src={`http://localhost:5000${movie.photos[0] || movie.poster}`}
+                      alt={movie.title}
+                      layout="fill"
+                      objectFit="cover"
+                    />
+                  </div>
+                </td>
+                <td className="p-3">{movie.title}</td>
+                <td className="p-3">{movie.genre}</td>
+                <td className="p-3">{movie.releaseDate}</td>
+                <td className="p-3">{movie.director}</td>
+                <td className="p-3">
+                  <button
+                    onClick={() => {
+                      setEditModal(true);
+                      setSelectedMovieId(movie._id);
+                    }}
+                    className="p-2 bg-yellow-500 text-white rounded-full hover:bg-yellow-600 transition duration-300 ease-in-out mr-2"
+                  >
+                    <FaEdit />
+                  </button>
+                  <button
+                    onClick={() => {
+                      setDeleteModal(true);
+                      setSelectedMovieId(movie._id);
+                    }}
+                    className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition duration-300 ease-in-out"
+                  >
+                    <FaTrash />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {/* Pagination */}
+      <div className="mt-6 flex justify-center">
+        <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+          <button
+            onClick={() => paginate(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+          >
+            <FaChevronLeft className="h-5 w-5" aria-hidden="true" />
+          </button>
+          {[...Array(totalPages)].map((_, index) => (
+            <button
+              key={index}
+              onClick={() => paginate(index + 1)}
+              className={`relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium ${
+                currentPage === index + 1 ? 'text-indigo-600 bg-indigo-50' : 'text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              {index + 1}
+            </button>
           ))}
-        </tbody>
-      </table>
+          <button
+            onClick={() => paginate(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+          >
+            <FaChevronRight className="h-5 w-5" aria-hidden="true" />
+          </button>
+        </nav>
+      </div>
       {isAddMovieOpen && (
         <AddMovie
           isOpen={isAddMovieOpen}
