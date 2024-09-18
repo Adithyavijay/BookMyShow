@@ -3,9 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { IoChevronBackOutline, IoChevronForwardOutline } from 'react-icons/io5';
 
 const banners = [
-  { id: 1, image: "/banners/Banner1.jpg", title: "Exciting Action Movie" },
-  { id: 2, image: "/banners/avengers.png  ", title: "Heartwarming Romance" },
-  { id: 3, image: "/banners/Banner1.jpg", title: "Thrilling Sci-Fi Adventure" },
+  { id: 1, image: "/banners/Banner3.jpg", title: "Exciting Action Movie" },
+  { id: 2, image: "/banners/banner4.jpg ", title: "Heartwarming Romance" },
+  { id: 3, image: "/banners/Banner5.jpg", title: "Thrilling Sci-Fi Adventure" },
 ];
 
 const MovieBanner = () => {
