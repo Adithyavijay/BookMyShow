@@ -1,6 +1,6 @@
-const { decryptToken, verifyAccessToken } = require('../utils/jwt-utils');
+import {decryptToken, verifyAccessToken } from '../utils/jwt-utils.js';
 
-exports.verifyUser= (req, res, next) => {
+export const verifyUser= (req, res, next) => {
   // Check if the token exists in the cookies
   const encryptedToken = req.cookies.encryptedToken;
 

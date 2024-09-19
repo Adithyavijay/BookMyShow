@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const castMemberSchema = new mongoose.Schema({
   castName: { type: String, required: true },
@@ -38,4 +38,4 @@ movieSchema.pre('save', function(next) {
   next();
 });
 
-module.exports = mongoose.model('Movie', movieSchema);
+export default mongoose.model('Movie', movieSchema);

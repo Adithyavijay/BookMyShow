@@ -1,71 +1,26 @@
-const User=require('../models/user');
+// userController.js
+import userRepository from '../repositories/user-repository.js';
 
-exports.getUsers=async(req,res)=>{
+/**
+ * Controller for handling user-related operations
+ */
+class UserController {
+  /**
+   * @desc Retrieves all users
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @returns {Object} JSON response with all users
+   */
+  async getUsers(req, res) {
     try {
-        const users = await User.aggregate([
-          {
-            $lookup: {
-              from: 'tickets',
-              localField: '_id',
-              foreignField: 'user',
-              as: 'tickets'
-            }
-          },
-          {
-            $addFields: {
-              totalTickets: { $size: '$tickets' },
-              activeTickets: {
-                $size: {
-                  $filter: {
-                    input: '$tickets',
-                    as: 'ticket',
-                    cond: { $eq: ['$$ticket.status', 'active'] }
-                  }
-                }
-              },
-              lastBooking: { $max: '$tickets.createdAt' },
-              upcomingMovie: {
-                $let: {
-                  vars: {
-                    upcomingTicket: {
-                      $first: {
-                        $filter: {
-                          input: '$tickets',
-                          as: 'ticket',
-                          cond: { 
-                            $and: [
-                              { $eq: ['$$ticket.status', 'active'] },
-                              { $gt: ['$$ticket.showDateTime', new Date()] }
-                            ]
-                          }
-                        }
-                      }
-                    }
-                  },
-                  in: '$$upcomingTicket.movieName'
-                }
-              }
-            }
-          },
-          {
-            $project: {
-              _id: 1,
-              username: 1,
-              email: 1,
-              profilePicture: 1,
-              totalTickets: 1,
-              activeTickets: 1,
-              lastBooking: 1,
-              upcomingMovie: 1
-            }
-          },
-          {
-            $sort: { lastBooking: -1, username: 1 }
-          }
-        ]);
-        res.json(users);
-      } catch (error) {
-        console.error('Error fetching users:', error);
-        res.status(500).json({ message: 'Error fetching users', error: error.message });
-      }
+      const users = await userRepository.getUsers();
+      res.json(users);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      res.status(500).json({ message: 'Error fetching users', error: error.message });
+    }
+  }
 }
+
+const userController = new UserController();
+export default userController;

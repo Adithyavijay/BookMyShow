@@ -1,5 +1,4 @@
-const Movie = require('../models/movie')
-
+import Movie from '../models/movie.js'
 class MovieRepository {
     async findById(id) {
         return await Movie.findById(id) .populate({
@@ -28,4 +27,5 @@ class MovieRepository {
         return await Movie.find().populate('theaters','name');
     }
 }
-module.exports = new MovieRepository();
+
+export default new MovieRepository();

@@ -1,147 +1,125 @@
-const express = require('express');
-const theaterRepository=require('../repositories/theater-repository')
-const Theater=require('../models/theater')
-const Showtime=require('../models/showtime')
-const Ticket=require('../models/ticket')
-const Movie=require('../models/movie')
+import express from 'express';
+import theaterRepository from '../repositories/theater-repository.js';
 
-exports.addTheater = async (req, res) => {
-  try {
-    const { name, location, capacity } = req.body;
-
-    // Validate input
-    if (!name || !location || !capacity) {
-      return res.status(400).json({ message: 'Please provide name, location, and capacity for the theater' });
+/**
+ * Controller for handling theater-related operations
+ */
+class TheaterController {
+  /**
+   * @desc Adds a new theater
+   * @param {Object} req - Express request object
+   * @param {Object} req.body - Request body
+   * @param {string} req.body.name - Name of the theater
+   * @param {string} req.body.location - Location of the theater
+   * @param {number} req.body.capacity - Capacity of the theater
+   * @param {Object} res - Express response object
+   * @returns {Object} JSON response with the created theater
+   */
+  async addTheater(req, res) {
+    try {
+      const { name, location, capacity } = req.body;
+      if (!name || !location || !capacity) {
+        return res.status(400).json({ message: 'Please provide name, location, and capacity for the theater' });
+      }
+      const theater = await theaterRepository.create({ name, location, capacity });
+      res.status(201).json({ message: 'Theater added successfully', theater: theater });
+    } catch (error) {
+      console.error('Error adding theater:', error);
+      res.status(500).json({ message: 'Error adding theater', error: error.message });
     }
-
-    // create a new theater
-    const theater = await theaterRepository.create({
-      name: name ,
-      location:location,
-      capacity
-    })
-
-
-    // Send a success response
-    res.status(201).json({
-      message: 'Theater added successfully',
-      theater: newTheater
-    });
-  } catch (error) {
-    // Handle errors
-    console.error('Error adding theater:', error);
-    res.status(500).json({ message: 'Error adding theater', error: error.message });
-  } 
-}; 
-exports.getTheaters =async(req,res)=>{ 
-  
-  try{
-    const theaters= await theaterRepository.findAll()
-    res.status(200).json({theaters})
-  }catch(error){
-    console.error("error fetching theaters",error)
-    res.status(500).json({message:"error fetching theater list ",error:error.message})
-  } 
-
-}
-
-exports.getTheaterById = async ( req,res)=>{ 
-  const id=req.params.id;
-  try{
-    const theater= await theaterRepository.findById(id)
-    if(!theater){
-      res.status(404).json({message : 'theater not found'})
-    }
-    res.status(200).json({theater});
-  }catch(err){
-    console.error( "error : ",err?.message || err)
   }
-} 
 
-exports.update=async(req,res)=>{ 
-  try {
-    const { id } = req.params;
-    const { name, location } = req.body;
-
-    // Validate input
-    if (!name || !location) {
-      return res.status(400).json({ message: 'Name and location are required' });
+  /**
+   * @desc Retrieves all theaters
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @returns {Object} JSON response with all theaters
+   */
+  async getTheaters(req, res) {
+    try {
+      const theaters = await theaterRepository.findAll();
+      res.status(200).json({ theaters });
+    } catch (error) {
+      console.error("Error fetching theaters", error);
+      res.status(500).json({ message: "Error fetching theater list", error: error.message });
     }
+  }
 
-    // Find the theater and update it
-    const updatedTheater = await Theater.findByIdAndUpdate(
-      id,
-      { 
+  /**
+   * @desc Retrieves a specific theater by ID
+   * @param {Object} req - Express request object
+   * @param {string} req.params.id - Theater ID
+   * @param {Object} res - Express response object
+   * @returns {Object} JSON response with the specified theater
+   */
+  async getTheaterById(req, res) {
+    const id = req.params.id;
+    try {
+      const theater = await theaterRepository.findById(id);
+      if (!theater) {
+        return res.status(404).json({ message: 'Theater not found' });
+      }
+      res.status(200).json({ theater });
+    } catch (err) {
+      console.error("Error:", err?.message || err);
+      res.status(500).json({ message: "Error fetching theater", error: err.message });
+    }
+  }
+
+  /**
+   * @desc Updates a specific theater
+   * @param {Object} req - Express request object
+   * @param {string} req.params.id - Theater ID
+   * @param {Object} req.body - Request body
+   * @param {string} req.body.name - Updated name of the theater
+   * @param {string} req.body.location - Updated location of the theater
+   * @param {Object} res - Express response object
+   * @returns {Object} JSON response with the updated theater
+   */
+  async update(req, res) {
+    try {
+      const { id } = req.params;
+      const { name, location } = req.body;
+      if (!name || !location) {
+        return res.status(400).json({ message: 'Name and location are required' });
+      }
+      const updatedTheater = await theaterRepository.update(id, { 
         name, 
         location,
         capacity: 100 // Always set capacity to 100
-      },
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedTheater) {
-      return res.status(404).json({ message: 'Theater not found' });
-    }
-
-    res.status(200).json({ 
-      message: 'Theater updated successfully', 
-      theater: updatedTheater 
-    });
-  } catch (error) {
-    console.error('Error updating theater:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-} 
-
-exports.deleteTheater = async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    // Start a session for transaction
-    const session = await Theater.startSession();
-    session.startTransaction();
-
-    try {
-      // Find the theater
-      const theater = await Theater.findById(id).session(session);
-      if (!theater) {
-        await session.abortTransaction();
+      });
+      if (!updatedTheater) {
         return res.status(404).json({ message: 'Theater not found' });
       }
+      res.status(200).json({ message: 'Theater updated successfully', theater: updatedTheater });
+    } catch (error) {
+      console.error('Error updating theater:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  }
 
-      // Find all showtimes for this theater
-      const showtimes = await Showtime.find({ theater: id }).session(session);
-
-      // Delete all tickets associated with these showtimes
-      for (const showtime of showtimes) {
-        await Ticket.deleteMany({ showtime: showtime._id }).session(session);
-      }
-
-      // Delete all showtimes for this theater
-      await Showtime.deleteMany({ theater: id }).session(session);
-
-      // Remove this theater from all movies that reference it
-      await Movie.updateMany(
-        { theaters: id },
-        { $pull: { theaters: id } }
-      ).session(session);
-
-      // Finally, delete the theater
-      await Theater.findByIdAndDelete(id).session(session);
-
-      // Commit the transaction
-      await session.commitTransaction();
+  /**
+   * @desc Deletes a specific theater
+   * @param {Object} req - Express request object
+   * @param {string} req.params.id - Theater ID
+   * @param {Object} res - Express response object
+   * @returns {Object} JSON response with deletion confirmation
+   */
+  async deleteTheater(req, res) {
+    const { id } = req.params;
+    try {
+      await theaterRepository.delete(id);
       res.status(200).json({ message: 'Theater and associated data deleted successfully' });
     } catch (error) {
-      // If an error occurred, abort the transaction
-      await session.abortTransaction();
-      throw error;
-    } finally {
-      // End the session
-      session.endSession();
+      console.error('Error deleting theater:', error);
+      if (error.message === 'Theater not found') {
+        res.status(404).json({ message: 'Theater not found' });
+      } else {
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+      }
     }
-  } catch (error) {
-    console.error('Error deleting theater:', error);
-    res.status(500).json({ message: 'Internal server error', error: error.message });
   }
-};
+}
+
+const theaterController = new TheaterController();
+export default theaterController;

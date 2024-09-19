@@ -1,4 +1,4 @@
-  const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
   const seatSchema = new mongoose.Schema({
     seatNumber: String,
@@ -46,4 +46,4 @@
   showtimeSchema.set('toJSON', { virtuals: true });
   showtimeSchema.set('toObject', { virtuals: true });
 
-  module.exports = mongoose.model('Showtime', showtimeSchema);
+export default mongoose.model('Showtime', showtimeSchema);

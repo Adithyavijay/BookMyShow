@@ -1,8 +1,13 @@
-const multer = require('multer');
-const path = require('path');
+import multer from 'multer';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
+// Get the directory name of the current module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const uploadDir = path.join(__dirname, '..', 'public', 'uploads');
+
 // Configure storage
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -24,24 +29,20 @@ const fileFilter = (req, file, cb) => {
 };
 
 // Multer upload configuration
-const upload = multer({
+export const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: {
     fileSize: 5 * 1024 * 1024 // 5MB limit
   }
 });
-const uploadMovieFiles = upload.fields([
-    { name: 'poster', maxCount: 1 },
-    { name: 'photos', maxCount: 5 },
-    { name: 'castPhoto0', maxCount: 1 },
-    { name: 'castPhoto1', maxCount: 1 },
-    { name: 'castPhoto2', maxCount: 1 },
-    { name: 'castPhoto3', maxCount: 1 },
-    { name: 'castPhoto4', maxCount: 1 }
-  ]);
-  
-module.exports ={
-    upload,
-    uploadMovieFiles
-}
+
+export const uploadMovieFiles = upload.fields([
+  { name: 'poster', maxCount: 1 },
+  { name: 'photos', maxCount: 5 },
+  { name: 'castPhoto0', maxCount: 1 },
+  { name: 'castPhoto1', maxCount: 1 },
+  { name: 'castPhoto2', maxCount: 1 },
+  { name: 'castPhoto3', maxCount: 1 },
+  { name: 'castPhoto4', maxCount: 1 }
+]);

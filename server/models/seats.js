@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const seatSchema = new mongoose.Schema({
   showtime: { type: mongoose.Schema.Types.ObjectId, ref: 'Showtime', required: true },
@@ -8,4 +8,4 @@ const seatSchema = new mongoose.Schema({
   booking: { type: mongoose.Schema.Types.ObjectId, ref: 'Booking' }
 });
 
-module.exports = mongoose.model('Seat', seatSchema);
+export default mongoose.model('Seat', seatSchema);

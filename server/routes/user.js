@@ -1,41 +1,40 @@
-const express = require('express');
-const router = express.Router();
-const movieController= require('../controllers/movie-controller')
-const showtimeController= require('../controllers/showtime-controller')
-const paymentController= require('../controllers/payment-controller')
-const ticketController= require('../controllers/ticket-controller')
-const authController= require('../controllers/auth-controller')
-const { verifyUser}= require('../middlewares/authorization')
+import express from 'express';
+import MovieController from '../controllers/movie-controller.js';
+import AuthController from '../controllers/auth-controller.js';
+import ShowtimeController from '../controllers/showtime-controller.js';
+import PaymentController from '../controllers/payment-controller.js';
+import TicketController from '../controllers/ticket-controller.js';
+import { verifyUser } from '../middlewares/authorization.js';
+import authController from '../controllers/auth-controller.js';
 
+const router = express.Router();
 
 // auth routes 
-router.post('/auth/google-callback',authController.googleCallback)
-router.post('/auth/verify-otp',authController.verifyEmailOTP)
-router.get('/logout', authController.logout)
+router.post('/auth/google-callback', AuthController.googleCallback);
+router.post('/auth/verify-otp', AuthController.verifyEmailOTP);
+router.get('/logout', AuthController.logout);
+router.post('/auth/resend-otp',AuthController.resendOTP)
 
 // movie routes
-router.get('/movies',movieController.getAllMovies) ;
-router.get('/movie/:id',movieController.getMovieById);  
+router.get('/movies', MovieController.getAllMovies);
+router.get('/movie/:id', MovieController.getMovieById);
+router.get('/search-movies', MovieController.searchMovies);
 
 // reviews 
-router.post('/movie/:id/review',movieController.addReview)
+router.post('/movie/:id/review', MovieController.addReview);
 
-// booking - show times 
-
-router.get('/showtimes/:id',verifyUser,showtimeController.getMovieShowtimes)
-router.get('/seats/:showtimeId',verifyUser,showtimeController.seatsByshowtimeId) 
+// booking - show times
+router.get('/showtimes/:id', ShowtimeController.getMovieShowtimes);
+router.get('/seats/:showtimeId', ShowtimeController.seatsByshowtimeId);
 
 // payment 
-router.post('/create-order',verifyUser,paymentController.createOrder);
-router.post('/verify-order', verifyUser,paymentController.verifyOrder);
+router.post('/create-order', verifyUser, PaymentController.createOrder);
+router.post('/verify-order', verifyUser, PaymentController.verifyOrder);
 
-// confirmation 
+// confirmation
+router.get('/get-ticket/:id', verifyUser, TicketController.getTicket);
+router.post('/send-whatsapp', verifyUser, TicketController.sendTicket);
 
-router.get('/get-ticket/:id',verifyUser, ticketController.getTicket)
-router.post('/send-whatsapp',verifyUser,ticketController.sendTicket )
+router.get('/tickets', verifyUser, TicketController.getAllTicketsByUserId);
 
-router.get('/search-movies',movieController.searchMovies) 
-
-router.get('/tickets',verifyUser, ticketController.getAllTicketsByUserId)
-
-module.exports = router;
+export default router;

@@ -1,14 +1,16 @@
 // repositories/showtime-repository.js
 
-const Showtime = require('../models/showtime');
-const Booking = require('../models/booking');
-const Ticket = require('../models/ticket');
-const mongoose = require('mongoose');
+import Showtime from '../models/showtime.js';
+import Booking from '../models/booking.js';
+import Ticket from '../models/ticket.js';
+import mongoose from 'mongoose';
+
 
 const showtimeRepository = {
   create: async (showtimeData) => {
     const newShowtime = new Showtime(showtimeData);
     newShowtime.initializeSeats();
+  
     await newShowtime.save();
     return Showtime.findById(newShowtime._id)
       .populate('movie', 'title')
@@ -85,4 +87,4 @@ const showtimeRepository = {
   }
 };
 
-module.exports = showtimeRepository;
+export default showtimeRepository;

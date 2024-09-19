@@ -5,8 +5,9 @@ import AddMovie from "./AddMovie";
 import EditMovie from "./EditMovie";
 import DeleteMovie from "./DeleteMovie";
 import { toast, Toaster } from "react-hot-toast";
+import MovieDetails from "./MovieDetails";
 import Image from 'next/image';
-import { FaSearch, FaPlus, FaEdit, FaTrash, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { FaSearch, FaPlus, FaEdit, FaTrash, FaChevronLeft, FaChevronRight ,FaEye} from 'react-icons/fa';
 
 interface Movie {
   _id: string;
@@ -31,7 +32,8 @@ const Movies: React.FC = () => {
   const [deleteModal, setDeleteModal] = useState(false);
   const [selectedMovieId, setSelectedMovieId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [moviesPerPage] = useState(5);
+  const [moviesPerPage] = useState(2);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   const api = process.env.API_BASE_URL;
   const baseApi = process.env.BASE_URL;
@@ -207,6 +209,15 @@ const Movies: React.FC = () => {
                   >
                     <FaTrash />
                   </button>
+                  <button
+                    onClick={() => {
+                      setSelectedMovieId(movie._id);
+                      setShowDetailsModal(true);
+                    }}
+                    className="p-2 ml-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition duration-300 ease-in-out"
+                  >
+                    <FaEye />
+                  </button>
                 </td>
               </tr>
             ))}
@@ -268,6 +279,13 @@ const Movies: React.FC = () => {
           }
           movieId={selectedMovieId}
           onDeleteSuccess={handleDelete}
+        />
+      )}
+
+{showDetailsModal && selectedMovieId && (
+        <MovieDetails
+          movieId={selectedMovieId}
+          onClose={() => setShowDetailsModal(false)}
         />
       )}
     </div>

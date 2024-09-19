@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose'
 
 const theaterSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -10,4 +10,4 @@ const theaterSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('Theater', theaterSchema);
+export default mongoose.model('Theater', theaterSchema);
