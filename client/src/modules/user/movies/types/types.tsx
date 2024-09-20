@@ -3,10 +3,6 @@ type CastMember = {
     castPhoto?: string;
   };
   
-  type Rating = {
-    user: string; // Assuming ObjectId is represented as a string
-    value: number;
-  };
   
   export interface Review {
     user: {
@@ -16,7 +12,12 @@ type CastMember = {
     text: string;
     date: string;
   }
-
+ 
+  export interface ApiResponse<T> {
+    data: T;
+    message: string;
+    status: boolean;
+  }
   
   export interface Movie {
     _id: string; // MongoDB ObjectId
@@ -32,7 +33,7 @@ type CastMember = {
     director: string;
     cast: CastMember[];
     theaters: string[]; // Array of Theater ObjectIds
-    ratings: Rating[];
+    ratings: number;
     averageRating: number;
     reviews: Review[];
   };

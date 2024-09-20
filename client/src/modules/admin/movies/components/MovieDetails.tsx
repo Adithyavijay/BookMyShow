@@ -17,7 +17,7 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movieId, onClose }) => {
     const fetchMovieDetails = async () => {
       try {
         const response = await axios.get(`${process.env.API_BASE_URL}/admin/movies/${movieId}`);
-        setMovie(response.data);
+        setMovie(response.data.data);
       } catch (error) {
         console.error("Error fetching movie details:", error);
       } finally {

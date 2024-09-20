@@ -26,7 +26,7 @@ const Theaters: React.FC = () => {
     const fetchTheaters = async () => {
         try {
             const response = await axios.get("http://localhost:5000/api/admin/get-theaters");
-            setTheaters(response.data.theaters);
+            setTheaters(response.data.data);
         } catch (error) {
             console.error("Error fetching theaters:", error);
         }

@@ -27,7 +27,8 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ id }) => {
     const fetchMovie = async () => {
         try {
             const response = await axios.get(`http://localhost:5000/api/user/movie/${id}`);
-            setMovie(response.data);
+           
+            setMovie(response.data.data);
         } catch (error) {
             console.error("Error fetching movie:", error);
         }
@@ -89,7 +90,7 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ id }) => {
                                     <span className="font-bold text-2xl">{movie.averageRating.toFixed(1)}</span>
                                     <span className="text-sm ml-2">/ 5</span>
                                 </div>
-                                <span className="text-gray-300">{movie.ratings.length} ratings</span>
+                                <span className="text-gray-300">{movie.ratings} ratings</span>
                             </div>
 
                             <div className="mb-6 flex flex-wrap gap-4">

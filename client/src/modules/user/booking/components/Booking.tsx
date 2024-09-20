@@ -63,7 +63,7 @@ const BookingPage: React.FC<BookingPageProps> = ({ id }) => {
           const response = await axios.get(
               `http://localhost:5000/api/user/showtimes/${id}`
           );
-          setShowtimes(response.data.showtimes);
+          setShowtimes(response.data.data);
       } catch (error) {
           console.error("Error fetching showtimes:", error);
       } finally {

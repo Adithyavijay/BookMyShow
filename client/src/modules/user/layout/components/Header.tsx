@@ -33,7 +33,7 @@ const Header = () => {
     if (value.length > 2) {
       try {
         const response = await axios.get(`http://localhost:5000/api/user/search-movies?query=${value}`);
-        setSearchResults(response.data);
+        setSearchResults(response.data.data);
         setShowResults(true);
       } catch (error) {
         console.error('Error searching movies:', error);

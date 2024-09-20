@@ -6,6 +6,7 @@ import Movie from '../models/movie.js';
 import User from '../models/user.js';
 import Showtime from '../models/showtime.js';
 import Ticket from '../models/ticket.js';
+import { formatMovie } from '../responses/movie-response.js';
 
 const __dirname = path.resolve();
 
@@ -62,10 +63,10 @@ const movieController = {
       };
 
       const newMovie = await movieRepository.create(movieData);
-      res.status(201).json({ message: 'Movie added successfully', movie: newMovie });
+      res.status(201).json({ status: true, message: 'Movie added successfully', data: formatMovie(newMovie) });
     } catch (error) {
       console.error('Error adding movie:', error);
-      res.status(500).json({ message: 'Error adding movie', error: error.message });
+      res.status(500).json({status:true, message: 'Error adding movie', error: error.message });
     }
   },
 
@@ -80,9 +81,10 @@ const movieController = {
   async getAllMovies(req, res) {
     try {
       const movies = await movieRepository.findAll();
-      res.json(movies);
+      const formattedMovies= movies.map(movie=>formatMovie(movie))
+      res.json({status:true,message : "Movies fetched successfully",data : formattedMovies});
     } catch (error) {
-      res.status(500).json({ message: 'Error fetching movies', error: error.message });
+      res.status(500).json({status:true, message: 'Error fetching movies', error: error.message });
     }
   },
 
@@ -98,19 +100,19 @@ const movieController = {
     const id = req.params.movieId || req.params.id;
 
     if (!id || !id.match(/^[0-9a-fA-F]{24}$/)) {
-      return res.status(400).json({ message: 'Invalid id format' });
+      return res.status(400).json({ status:false,message: 'Invalid id format' });
     }
 
     try {
       const movie = await movieRepository.findById(id);
 
       if (!movie) {
-        return res.status(404).json({ message: 'Movie not found in database' });
+        return res.status(404).json({status:false, message: 'Movie not found in database' });
       }
-      res.status(200).json(movie);
+      res.status(200).json({status : true ,message :"Movie fetched successfully",data : formatMovie(movie)});
     } catch (err) {
       console.log(err);
-      res.status(500).json({ message: "Server error", error: err.message });
+      res.status(500).json({status:false, message: "Server error", error: err.message });
     }
   },
 
@@ -140,7 +142,7 @@ const movieController = {
 
       let movie = await movieRepository.findById(id);
       if (!movie) {
-        return res.status(404).json({ message: 'Movie not found' });
+        return res.status(404).json({ status:false,message: 'Movie not found' });
       }
 
       let posterFile = movie.poster;
@@ -180,10 +182,10 @@ const movieController = {
       };
 
       const updatedMovie = await movieRepository.update(id, updateData);
-      res.status(200).json({ message: 'Movie updated successfully', movie: updatedMovie });
+      res.status(200).json({status:true, message: 'Movie updated successfully', data: formatMovie(updatedMovie) });
     } catch (error) {
       console.error('Error updating movie:', error);
-      res.status(500).json({ message: 'Error updating movie', error: error.message });
+      res.status(500).json({ status:false, message: 'Error updating movie', error: error.message });
     }
   },
 
@@ -201,7 +203,7 @@ const movieController = {
     try {
       const movie = await Movie.findById(id);
       if (!movie) {
-        return res.status(404).json({ message: "Movie not found" });
+        return res.status(404).json({status:false, message: "Movie not found" });
       }
 
       // Delete associated files (poster and photos)
@@ -250,10 +252,10 @@ const movieController = {
       // Delete the movie from the database
       await Movie.findByIdAndDelete(id);
 
-      res.status(200).json({ message: "Movie and associated data deleted successfully" });
+      res.status(200).json({ status:true, message: "Movie and associated data deleted successfully" });
     } catch (error) {
       console.error('Error deleting movie:', error);
-      res.status(500).json({ message: "Error deleting movie and associated data", error: error.message });
+      res.status(500).json({ status:true , message: "Error deleting movie and associated data", error: error.message });
     }
   },  
 
@@ -269,7 +271,7 @@ const movieController = {
     try {
       const { query } = req.query;
       if (!query) {
-        return res.status(400).json({ message: 'Search query is required' });
+        return res.status(400).json({ status:false,message: 'Search query is required' });
       }
   
       const movies = await Movie.find({
@@ -278,11 +280,12 @@ const movieController = {
           { genre: { $regex: query, $options: 'i' } },
         ]
       }).limit(10);
-  
-      res.json(movies);
+
+      const formattedMovies= movies.map(movie=>formatMovie(movie))  
+      res.status(200).json({status : true , message : 'Movies fetched successfully',data : formattedMovies}); 
     } catch (error) {
       console.error('Error searching movies:', error);
-      res.status(500).json({ message: 'Internal server error' });
+      res.status(500).json({status:false, message: 'Internal server error',error :error.message });
     }
   },
 
@@ -302,13 +305,13 @@ const movieController = {
       // Find the movie
       const movie = await movieRepository.findById(id);
       if (!movie) {
-        return res.status(404).json({ message: 'Movie not found' });
+        return res.status(404).json({status:false, message: 'Movie not found' });
       }
 
       // Find the user
       const user = await User.findById(userId);
       if (!user) {
-        return res.status(404).json({ message: 'User not found' });
+        return res.status(404).json({status:false, message: 'User not found' });
       }
 
       // Check if user has already reviewed this movie
@@ -346,12 +349,12 @@ const movieController = {
       // Save the updated movie
       await movie.save();
 
-      res.status(200).json({ message: 'Review added successfully', movie });
+      res.status(200).json({ status:true,message: 'Review added successfully',data : formatMovie(movie)});
     } catch (error) {
       console.error('Error adding review:', error);
-      res.status(500).json({ message: 'Error adding review', error: error.message });
+      res.status(500).json({status:true, message: 'Error adding review', error: error.message });
     }
   }
 };
 
-export default movieController;
+export default movieController; 

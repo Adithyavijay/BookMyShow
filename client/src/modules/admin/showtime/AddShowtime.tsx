@@ -68,7 +68,7 @@ const AddShowtime: React.FC<AddShowTimeProps> = ({ onClose }) => {
       const response = await axios.get(`${api}/admin/showtimes-check`, {
         params: { movieId: selectedMovie?._id, theaterId: selectedTheater, date }
       });
-      setExistingShowtimes(response.data);
+      setExistingShowtimes(response.data.data);
     } catch (err) {
       console.error("Error fetching existing showtimes:", err);
     } 
@@ -120,7 +120,7 @@ const AddShowtime: React.FC<AddShowTimeProps> = ({ onClose }) => {
     setLoading(true);
     try {
       const response = await axios.get('http://localhost:5000/api/admin/movies');
-      setMovies(response.data);
+      setMovies(response.data.data);
 
     } catch (err) {
       console.log(err);

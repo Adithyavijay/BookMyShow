@@ -43,7 +43,7 @@ const Tickets: React.FC = () => {
     setIsLoading(true);
     try {
       const response = await axios.get(`${api}/admin/tickets`);
-      setTickets(response.data);
+      setTickets(response.data.data);
     } catch (error) {
       console.error('Error fetching tickets:', error);
       toast.error('Failed to fetch tickets');

@@ -5,7 +5,6 @@ import ShowtimeController from '../controllers/showtime-controller.js';
 import PaymentController from '../controllers/payment-controller.js';
 import TicketController from '../controllers/ticket-controller.js';
 import { verifyUser } from '../middlewares/authorization.js';
-import authController from '../controllers/auth-controller.js';
 
 const router = express.Router();
 

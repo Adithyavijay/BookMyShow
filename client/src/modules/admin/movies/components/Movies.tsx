@@ -22,6 +22,12 @@ interface Movie {
 interface MovieFormData {
   [key: string]: any;
   cast?: { castName: string; castPhoto: File | null }[];
+} 
+
+interface ApiResponse<T> {
+  data : T ;
+  status : boolean ;
+  message : string;
 }
 
 const Movies: React.FC = () => {
@@ -40,8 +46,8 @@ const Movies: React.FC = () => {
 
   const fetchMovies = useCallback(async () => {
     try {
-      const response = await axios.get<Movie[]>(`${api}/admin/movies`);
-      setMovies(response.data);
+      const response = await axios.get<ApiResponse<Movie[]>>(`${api}/user/movies`);
+      setMovies(response.data.data);
     } catch (error) {
       console.error("Error fetching movies:", error);
       toast.error("Failed to fetch movies");

@@ -29,11 +29,11 @@ class AuthController {
       if (resendOTP) {
         // Resend OTP logic
         if (!req.session.otp || !req.session.otp.email) {
-          return res.status(400).json({ message: 'No active session found for OTP resend' });
+          return res.status(400).json({ status : false,message: 'No active session found for OTP resend' });
         }
         user = await findUserByEmail(req.session.otp.email);
         if (!user) {
-          return res.status(404).json({ message: 'User not found' });
+          return res.status(404).json({status : false, message: 'User not found' });
         }
       } else {
         // Initial Google sign-in logic
@@ -66,13 +66,13 @@ class AuthController {
         await sendOTPEmail(user.email, otp);
       } catch(err) {
         console.error('send err ', err);
-        return res.status(500).json({ message: 'Failed to send OTP email' });
+        return res.status(500).json({ status:false,message: 'Failed to send OTP email' });
       } 
   
       req.session.save((err) => {
         if (err) {
           console.error('Failed to save session:', err);
-          return res.status(500).json({ message: 'Internal server error' });
+          return res.status(500).json({status : false, message: 'Internal server error' });
         }
         res.json({ 
           message: resendOTP ? 'New OTP sent successfully' : 'OTP sent successfully', 
@@ -88,7 +88,7 @@ class AuthController {
   
     } catch (err) {    
       console.error('err', err);
-      res.status(500).json({ message: 'Authentication failed' });
+      res.status(500).json({ status:false,message: 'Authentication failed' });
     }
   }
 
@@ -237,7 +237,7 @@ class AuthController {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: 'Email and password are required' });
+      return res.status(400).json({ status: false,message: 'Email and password are required' });
     }
 
     if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
@@ -256,7 +256,7 @@ class AuthController {
 
       return res.status(200).json({ token });
     } else {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      return res.status(401).json({status:false, message: 'Invalid credentials' });
     }
   }
 

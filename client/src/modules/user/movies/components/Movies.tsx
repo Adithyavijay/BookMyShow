@@ -6,6 +6,7 @@ import { Movie } from '../types/types';
 import { useRouter } from 'next/navigation';
 import { FaSortAmountDown, FaLanguage } from 'react-icons/fa';
 import { MdTheaters } from 'react-icons/md';
+import { ApiResponse } from '../types/types';
 
 const Movies: React.FC = () => {  
     const [movies, setMovies] = useState<Movie[]>([]);
@@ -15,7 +16,7 @@ const Movies: React.FC = () => {
     const [selectedLanguage, setSelectedLanguage] = useState<string>('');
     const [sortByRating, setSortByRating] = useState<boolean>(false);
     const api = 'http://localhost:5000/api'; 
-    const router = useRouter();
+    const router = useRouter(); 
 
     useEffect(() => {
         fetchMovies();
@@ -23,12 +24,12 @@ const Movies: React.FC = () => {
 
     const fetchMovies = async () => {
         try {
-            const response = await axios.get<Movie[]>(`${api}/user/movies`);
-            setMovies(response.data);
+            const response = await axios.get<ApiResponse<Movie[]>>(`${api}/user/movies`);
+            setMovies(response.data.data);
             
             // Extract unique genres and languages
-            const uniqueGenres = Array.from(new Set(response.data.map(movie => movie.genre).filter((genre): genre is string => genre !== undefined)));
-            const uniqueLanguages = Array.from(new Set(response.data.map(movie => movie.language).filter((language): language is string => language !== undefined)));
+            const uniqueGenres = Array.from(new Set(response.data.data.map(movie => movie.genre).filter((genre): genre is string => genre !== undefined)));
+            const uniqueLanguages = Array.from(new Set(response.data.data.map(movie => movie.language).filter((language): language is string => language !== undefined)));
             setGenres(uniqueGenres);
             setLanguages(uniqueLanguages);
         } catch (error) {

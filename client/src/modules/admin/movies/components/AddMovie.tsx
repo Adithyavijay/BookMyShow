@@ -42,7 +42,7 @@ const AddMovie: React.FC<AddMovieProps> = ({ isOpen, onClose, onAddMovie }) => {
   const fetchTheaters=async()=>{ 
     try{
       const response  = await axios.get( api+'/admin/get-theaters')
-      setTheaters(response.data.theaters)
+      setTheaters(response.data.data)
     }catch(error){
       console.error('error :',error)
     } 

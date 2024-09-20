@@ -15,6 +15,12 @@ interface User {
   lastBooking: string ;
 }
 
+interface ApiResponse<T> {
+  data : T;
+  status : boolean;
+  message: string;
+}
+
 const Users: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -25,9 +31,8 @@ const Users: React.FC = () => {
 
   const fetchUsers = useCallback(async () => {
     try {
-      const response = await axios.get<User[]>(`${api}/admin/users`);
-      setUsers(response.data);
-      console.log(response.data)
+      const response = await axios.get<ApiResponse<User[]>>(`${api}/admin/users`);
+      setUsers(response.data.data);
     } catch (error) {
       console.error("Error fetching users:", error);
       toast.error("Failed to fetch users");

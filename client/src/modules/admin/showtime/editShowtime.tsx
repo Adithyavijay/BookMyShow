@@ -71,8 +71,8 @@ const EditShowtime: React.FC<EditShowtimeProps> = ({ onClose, showtimeId, onUpda
   const fetchShowtime = async () => {
     try {
       const response = await axios.get(`${api}/admin/showtimes/${showtimeId}`);
-      setShowtime(response.data);
-      setSelectedTimeSlot(getTimeSlotFromTime(response.data.startTime));
+      setShowtime(response.data.data);
+      setSelectedTimeSlot(getTimeSlotFromTime(response.data.data.startTime));
     } catch (error) {
       console.error('Error fetching showtime:', error);
       toast.error('Failed to fetch showtime details');
@@ -82,7 +82,7 @@ const EditShowtime: React.FC<EditShowtimeProps> = ({ onClose, showtimeId, onUpda
   const fetchMovies = async () => {
     try {
       const response = await axios.get(`${api}/admin/movies`);
-      setMovies(response.data);
+      setMovies(response.data.data);
     } catch (error) {
       console.error('Error fetching movies:', error);
       toast.error('Failed to fetch movies');
@@ -92,11 +92,11 @@ const EditShowtime: React.FC<EditShowtimeProps> = ({ onClose, showtimeId, onUpda
   };
 
   const fetchExistingShowtimes = async (movieId: string, theaterId: string, date: string) => {
-    try {
+    try { 
       const response = await axios.get(`${api}/admin/showtimes-check`, {
         params: { movieId, theaterId, date }
       });
-      setExistingShowtimes(response.data.filter((s: any) => s._id !== showtimeId));
+      setExistingShowtimes(response.data.data.filter((s: any) => s._id !== showtimeId));
     } catch (err) {
       console.error("Error fetching existing showtimes:", err);
     }

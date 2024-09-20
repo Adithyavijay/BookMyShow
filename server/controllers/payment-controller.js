@@ -1,6 +1,6 @@
 // paymentController.js
 
-import paymentRepository from '../repositories/payment-repository.js';
+import paymentRepository from "../repositories/payment-repository.js";
 
 /**
  * Controller for handling payment-related operations
@@ -17,10 +17,17 @@ class PaymentController {
     async createOrder(req, res) {
         try {
             const order = await paymentRepository.createOrder(req.body.amount);
-            res.json({ orderId: order.id });
+            res.json({
+                status: true,
+                message: "order id fetched successfully",
+                orderId: order.id,
+            });
         } catch (error) {
             console.error("Error creating order:", error);
-            res.status(500).json({ error: "Error creating order" });
+            res.status(500).json({
+                status: false,
+                error: "Error creating order",
+            });
         }
     }
 
@@ -56,7 +63,9 @@ class PaymentController {
 
             if (isValid) {
                 // Find the showtime
-                const showtime = await paymentRepository.findShowtime(showtimeId);
+                const showtime = await paymentRepository.findShowtime(
+                    showtimeId
+                );
 
                 if (!showtime) {
                     return res.status(404).json({
@@ -72,21 +81,29 @@ class PaymentController {
                 const totalPrice = seats.length * showtime.price;
 
                 // Create booking
-                const booking = await paymentRepository.createBooking(req.user.id, showtimeId, seats, totalPrice);
+                const booking = await paymentRepository.createBooking(
+                    req.user.id,
+                    showtimeId,
+                    seats,
+                    totalPrice
+                );
 
                 // Create ticket
                 const ticket = await paymentRepository.createTicket(
-                    booking, 
-                    req.user.id, 
-                    showtimeId, 
-                    showtime.movie.title, 
-                    showtime.theater.name, 
-                    showtime.startTime, 
+                    booking,
+                    req.user.id,
+                    showtimeId,
+                    showtime.movie.title,
+                    showtime.theater.name,
+                    showtime.startTime,
                     seats
                 );
 
                 // Update user's bookings
-                await paymentRepository.updateUserBookings(req.user.id, booking._id);
+                await paymentRepository.updateUserBookings(
+                    req.user.id,
+                    booking._id
+                );
 
                 res.json({ success: true, ticketId: ticket._id });
             } else {

@@ -43,7 +43,7 @@ const EditMovie: React.FC<EditMovieProps> = ({ isOpen, onClose, onEditMovie, mov
   const fetchMovieData = async () => {
     try {
       const response = await axios.get(`${api}/admin/movies/${movieId}`);
-      setFormData(response.data);
+      setFormData(response.data.data);
     } catch (error) {
       console.error('Error fetching movie data:', error);
     }
@@ -52,7 +52,7 @@ const EditMovie: React.FC<EditMovieProps> = ({ isOpen, onClose, onEditMovie, mov
   const fetchTheaters = async () => {
     try {
       const response = await axios.get(`${api}/admin/get-theaters`);
-      setTheaters(response.data.theaters);
+      setTheaters(response.data.data);
     } catch (error) {
       console.error('Error fetching theaters:', error);
     }

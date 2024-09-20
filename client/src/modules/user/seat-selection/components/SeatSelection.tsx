@@ -39,11 +39,10 @@ const SeatSelection: React.FC<SeatSelectionProps> = ({ showtimeId, quantity }) =
     setIsLoading(true);
     try {
       const response = await axios.get(`http://localhost:5000/api/user/seats/${showtimeId}`);
-      setSeats(response.data[0].seats); 
-      console.log(response.data[0].price)
-     
+      console.log(response.data)
+      setSeats(response.data.data.seats);  
       // Assuming the price is returned from the API. If not, you'll need to set it manually or fetch it separately.
-      setTotalPrice(response.data[0].price || 100); // Default to 100 if price is not provided
+      setTotalPrice(response.data.data.price || 100); // Default to 100 if price is not provided
     } catch (error) {
       console.error("Error fetching seats:", error);
     } finally {
@@ -55,9 +54,44 @@ const SeatSelection: React.FC<SeatSelectionProps> = ({ showtimeId, quantity }) =
     if (selectedSeats.includes(seatNumber)) {
       setSelectedSeats(selectedSeats.filter(seat => seat !== seatNumber));
     } else if (selectedSeats.length < quantity) {
-      setSelectedSeats([...selectedSeats, seatNumber]);
+      const availableAdjacentSeats = findAdjacentSeats(seatNumber, quantity - selectedSeats.length);
+      if (availableAdjacentSeats.length > 0) {
+        setSelectedSeats([...selectedSeats, ...availableAdjacentSeats]);
+      } else {
+        console.log('No adjacent seats available.');
+      }
     }
-  }; 
+  };
+  
+  // Function to find nearby available seats
+  const findAdjacentSeats = (seatNumber: string, neededSeats: number) => {
+    const row = seatNumber[0];
+    const col = parseInt(seatNumber.slice(1));
+    const adjacentSeats: string[] = [];
+  
+
+  
+    // Check seats on the right
+    for (let i = 0; i < neededSeats; i++) {
+      const seat = `${row}${col + i}`;
+      const seatInfo = seats.find(s => s.seatNumber === seat);
+      if (seatInfo && !seatInfo.isBooked) {
+        adjacentSeats.push(seat);
+      } else {
+        break; // Stop if we encounter a booked seat
+      }
+    }
+  
+    // If we find enough adjacent seats
+    if (adjacentSeats.length === neededSeats) {
+      console.log('Found enough adjacent seats:', adjacentSeats);
+      return adjacentSeats;
+    } 
+  
+  
+    console.log('Final adjacent seats:', adjacentSeats);
+    return adjacentSeats;
+  };
   const handlePayment = async () => {
     if (!isRazorpayLoaded) {
       toast.error('Payment system is still loading. Please try again in a moment.');

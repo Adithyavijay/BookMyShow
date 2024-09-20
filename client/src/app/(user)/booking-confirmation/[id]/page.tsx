@@ -36,7 +36,7 @@ export default function BookingConfirmation({
             const response = await axios.get(
                 `http://localhost:5000/api/user/get-ticket/${params.id}`
             );
-            setTicketInfo(response.data);
+            setTicketInfo(response.data.data);
         } catch (error) {
             console.error("Error fetching ticket info:", error);
         }finally{

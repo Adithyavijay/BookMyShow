@@ -1,5 +1,6 @@
 // userController.js
 import userRepository from '../repositories/user-repository.js';
+import { formatUserResponse } from '../responses/user-response.js';
 
 /**
  * Controller for handling user-related operations
@@ -14,7 +15,9 @@ class UserController {
   async getUsers(req, res) {
     try {
       const users = await userRepository.getUsers();
-      res.json(users);
+      const formattedUsers= users.map(formatUserResponse)
+      console.log(formattedUsers)
+      res.json({ status : true , message : "Users fetched successfully", data : formattedUsers});
     } catch (error) {
       console.error('Error fetching users:', error);
       res.status(500).json({ message: 'Error fetching users', error: error.message });
