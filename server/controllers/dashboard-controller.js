@@ -13,7 +13,7 @@ class DashboardController {
    * @returns {Object} JSON response with compiled dashboard data
    */
   async getDashboardData(req, res) {
-    try {
+    try { 
       // Fetch all required data concurrently for better performance
       const [
         totalUsers,

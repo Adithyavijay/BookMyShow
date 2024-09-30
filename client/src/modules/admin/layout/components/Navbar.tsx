@@ -8,6 +8,7 @@ import {useRouter} from 'next/navigation';
 import { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 import { adminAuthState } from '../../atoms/atom';
+import { adminApi } from '@/utils/api';
 
 export default function Navbar(): JSX.Element {  
   const router=useRouter();
@@ -25,13 +26,13 @@ export default function Navbar(): JSX.Element {
       setIsAdminAuthenticated(response.data.isAuthenticated);
     } catch (error) {
       console.error('Error checking auth status:', error);
-      setIsAdminAuthenticated(false);
+      setIsAdminAuthenticated(false); 
     }
   };
 
 
   const handleLogout=async()=>{
-    const response =await axios.get('http://localhost:5000/api/admin/logout')
+    const response =await adminApi.get('/logout')
     if(response.data.success){
       setIsAdminAuthenticated(false);
     }

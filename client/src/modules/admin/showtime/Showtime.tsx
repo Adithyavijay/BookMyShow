@@ -7,6 +7,7 @@ import { ClipLoader } from "react-spinners";
 import { FaSearch, FaPlus, FaEdit, FaTrash, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import EditShowtime from './editShowtime';
 import DeleteShowtime from './DeleteShowtime';
+import { adminApi } from "@/utils/api";
 
 interface Movie {
     _id: string;
@@ -55,9 +56,8 @@ const ShowTimes: React.FC = () => {
     const fetchShowTimes = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get(api + "/admin/showtimes");
-            console.log(response.data.data)
-            setShowTimes(response.data.data);
+            const response = await axios.get("http://localhost:5000/api/admin/showtimes");
+            setShowTimes(response.data.data);   
         } catch (error) {
             console.error("Error fetching showtimes:", error);
             toast.error("Failed to fetch showtimes");
@@ -83,6 +83,10 @@ const ShowTimes: React.FC = () => {
 
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
    
+    const handleAddSuccess=()=>{
+        fetchShowTimes();
+    }
+
     const handleEditClick = (showtimeId: string) => {
         setSelectedShowTimeId(showtimeId);
         setEditModalOpen(true);
@@ -205,7 +209,9 @@ const ShowTimes: React.FC = () => {
                     </button>
                 </nav>
             </div>
-            {isAddShowTimeOpen && <AddShowtime onClose={() => setIsAddShowTimeOpen(false)} />}
+            {isAddShowTimeOpen 
+            && 
+             <AddShowtime onSuccess={handleAddSuccess} onClose={() => setIsAddShowTimeOpen(false)} />}
             {/* Add EditShowtime and DeleteShowtime modals here when implemented */}
             {editModalOpen && selectedShowTimeId && (
         <EditShowtime

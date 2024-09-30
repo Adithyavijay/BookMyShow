@@ -184,8 +184,10 @@ class ShowtimeController {
      * @returns {Object} JSON response with the updated showtime
      */
     async updateShowtime(req, res) {
-        try {
+        try { 
+            
             const { id } = req.params;
+          
             let {
                 movie,
                 theater,
@@ -240,7 +242,7 @@ class ShowtimeController {
                     .json({ status: false, message: "Showtime not found" });
             }
 
-            res.status(200).json({status: true, message : "showtime updated successfully", data : formatShowtime(updatedData)});
+            res.status(200).json({status: true, message : "showtime updated successfully", data : formatShowtime(updatedShowtime)});
         } catch (error) {
             console.error("Error updating showtime:", error);
             res.status(500).json({

@@ -6,6 +6,7 @@ import EditTheaterModal from "./EditTheater";
 import { Theater, AddTheaterData } from '../types/type';
 import { FaSearch, FaPlus, FaEdit, FaTrash, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import DeleteTheaterModal from "./DeleteTheater";
+import { adminApi } from "@/utils/api";
 
 const Theaters: React.FC = () => {
     const [theaters, setTheaters] = useState<Theater[]>([]);
@@ -25,7 +26,7 @@ const Theaters: React.FC = () => {
 
     const fetchTheaters = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/api/admin/get-theaters");
+            const response = await adminApi.get("/get-theaters");
             setTheaters(response.data.data);
         } catch (error) {
             console.error("Error fetching theaters:", error);
@@ -39,7 +40,7 @@ const Theaters: React.FC = () => {
 
     const handleAddTheater = async (theaterData: AddTheaterData) => {
         try {
-            const response = await axios.post("http://localhost:5000/api/admin/upload-theater", theaterData);
+            const response = await adminApi.post("/upload-theater", theaterData);
             if (response.status === 201) {
                 fetchTheaters();
                 setIsAddTheaterOpen(false);

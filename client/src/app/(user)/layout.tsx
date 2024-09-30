@@ -12,7 +12,6 @@ interface LayoutProps {
  function Layout({ children }: LayoutProps): JSX.Element {
   return (
     <div >
-
       <Header/>
         <main>{children}</main>
       <Footer/>

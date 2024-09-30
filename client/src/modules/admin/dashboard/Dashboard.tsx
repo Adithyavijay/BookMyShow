@@ -5,6 +5,7 @@ import { FaUsers, FaTicketAlt, FaFilm, FaTheaterMasks } from 'react-icons/fa';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { PieChart, Pie, Cell } from 'recharts';
 import MetricCard from './MetricCard';
+import { adminApi } from '@/utils/api';
 
 interface DashboardData {
   totalUsers: number;
@@ -29,7 +30,7 @@ const Dashboard: React.FC = () => {
     const fetchDashboardData = async () => { 
         
       try {
-        const response = await axios.get('http://localhost:5000/api/admin/dashboard');
+        const response = await adminApi.get('/dashboard');
         setDashboardData(response.data);
         console.log(response.data)
       } catch (error) {

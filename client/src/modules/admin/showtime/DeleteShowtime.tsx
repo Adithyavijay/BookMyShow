@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
 import { toast,Toaster   } from 'react-hot-toast';
+import { adminApi } from '@/utils/api';
 
 interface DeleteShowtimeProps {
   showtimeId: string;
@@ -20,7 +21,7 @@ const DeleteShowtime: React.FC<DeleteShowtimeProps> = ({ showtimeId, movieTitle,
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      await axios.delete(`${api}/admin/showtimes/${showtimeId}`);
+      await adminApi.delete(`/showtimes/${showtimeId}`);
       toast.success('Showtime deleted successfully');
       onDelete();
       onClose();

@@ -5,6 +5,7 @@ import axios from 'axios';
 import { toast, Toaster } from 'react-hot-toast';
 import { ClipLoader } from 'react-spinners';
 import { FaSearch, FaEye, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { adminApi } from '@/utils/api';
 
 interface Ticket {
   _id: string;
@@ -42,7 +43,7 @@ const Tickets: React.FC = () => {
   const fetchTickets = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`${api}/admin/tickets`);
+      const response = await adminApi.get(`/tickets`);
       setTickets(response.data.data);
     } catch (error) {
       console.error('Error fetching tickets:', error);

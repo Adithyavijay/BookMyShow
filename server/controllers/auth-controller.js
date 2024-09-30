@@ -275,7 +275,7 @@ class AuthController {
       });
 
       res.status(200).json({ success: true, message: 'Logged out successfully' });
-    } catch (error) {
+    } catch (error) { 
       console.error('Logout error:', error);
       res.status(500).json({ success: false, message: 'Error logging out' });
     }
@@ -300,8 +300,37 @@ class AuthController {
       }
     } else {
       res.json({ isAuthenticated: false });
-    }
+    } 
   }
+  validateAdminToken = async (req, res) => {
+    const token =  req.cookies.adminToken;
+  
+    if (!token) {
+      return res.status(401).json({ isValid: false, message: 'No token provided' });
+    }
+  
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      // Check if the token is for the admin email
+      if (decoded.email !== process.env.ADMIN_EMAIL) {
+        return res.status(403).json({ isValid: false, message: 'Token is not for admin' });
+      }
+  
+      // Token is valid and belongs to admin
+      return res.status(200).json({ isValid: true, message: 'Token is valid' });
+    } catch (error) {
+      if (error instanceof jwt.TokenExpiredError) {
+        return res.status(401).json({ isValid: false, message: 'Token has expired' });
+      }
+      if (error instanceof jwt.JsonWebTokenError) {
+        return res.status(401).json({ isValid: false, message: 'Invalid token' });
+      }
+      // For any other error
+      return res.status(500).json({ isValid: false, message: 'Failed to authenticate token' });
+    }
+  };
+  
+
 }
 
 export default new AuthController();

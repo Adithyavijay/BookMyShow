@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
 import { toast } from 'react-hot-toast';
+import { adminApi } from '@/utils/api';
 
 interface AddShowTimeProps {
-  onClose: () => void
+  onClose: () => void;
+  onSuccess: ()=>void;
 }
 
 interface Movie {
@@ -30,7 +32,7 @@ const TIME_SLOTS = [
 ];
 
 
-const AddShowtime: React.FC<AddShowTimeProps> = ({ onClose }) => {
+const AddShowtime: React.FC<AddShowTimeProps> = ({ onClose ,onSuccess}) => {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [selectedTheater, setSelectedTheater] = useState('');
@@ -65,7 +67,7 @@ const AddShowtime: React.FC<AddShowTimeProps> = ({ onClose }) => {
 
   const fetchExistingShowtimes = async () => {
     try {
-      const response = await axios.get(`${api}/admin/showtimes-check`, {
+      const response = await adminApi.get(`/showtimes-check`, {
         params: { movieId: selectedMovie?._id, theaterId: selectedTheater, date }
       });
       setExistingShowtimes(response.data.data);
@@ -119,7 +121,7 @@ const AddShowtime: React.FC<AddShowTimeProps> = ({ onClose }) => {
   const fetchMovies = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:5000/api/admin/movies');
+      const response = await adminApi.get(`/movies`);
       setMovies(response.data.data);
 
     } catch (err) {
@@ -151,9 +153,10 @@ const AddShowtime: React.FC<AddShowTimeProps> = ({ onClose }) => {
       isCancellable: cancellable === 'Cancellation Available'
     };
       try {
-      const response = await axios.post(`${api}/admin/add-showtime`, showtimeData);
+      const response = await adminApi.post(`/add-showtime`, showtimeData);
       console.log(response);
-      if (response.status === 201) {
+      if (response.status === 201) { 
+        onSuccess();
         toast.success('Showtime added successfully');
         onClose();
       } else {

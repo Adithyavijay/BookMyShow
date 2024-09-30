@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
 import { toast ,Toaster } from 'react-hot-toast';
+import { adminApi } from '@/utils/api';
 
 interface EditShowtimeProps {
   onClose: () => void;
@@ -70,7 +71,7 @@ const EditShowtime: React.FC<EditShowtimeProps> = ({ onClose, showtimeId, onUpda
 
   const fetchShowtime = async () => {
     try {
-      const response = await axios.get(`${api}/admin/showtimes/${showtimeId}`);
+      const response = await adminApi.get(`/showtimes/${showtimeId}`);
       setShowtime(response.data.data);
       setSelectedTimeSlot(getTimeSlotFromTime(response.data.data.startTime));
     } catch (error) {
@@ -79,9 +80,9 @@ const EditShowtime: React.FC<EditShowtimeProps> = ({ onClose, showtimeId, onUpda
     }
   };
 
-  const fetchMovies = async () => {
+  const fetchMovies = async () => { 
     try {
-      const response = await axios.get(`${api}/admin/movies`);
+      const response = await adminApi.get(`/movies`);
       setMovies(response.data.data);
     } catch (error) {
       console.error('Error fetching movies:', error);
@@ -93,7 +94,7 @@ const EditShowtime: React.FC<EditShowtimeProps> = ({ onClose, showtimeId, onUpda
 
   const fetchExistingShowtimes = async (movieId: string, theaterId: string, date: string) => {
     try { 
-      const response = await axios.get(`${api}/admin/showtimes-check`, {
+      const response = await adminApi.get(`/showtimes-check`, {
         params: { movieId, theaterId, date }
       });
       setExistingShowtimes(response.data.data.filter((s: any) => s._id !== showtimeId));
@@ -196,7 +197,7 @@ const EditShowtime: React.FC<EditShowtimeProps> = ({ onClose, showtimeId, onUpda
         endTime: showtime.endTime,
       };
   
-      const response = await axios.put(`${api}/admin/showtimes/${showtimeId}`, formattedShowtime);
+      const response = await adminApi.put(`/showtimes/${showtimeId}`, formattedShowtime);
       if (response.status === 200) {
         toast.success('Showtime updated successfully');
         onUpdate();

@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaTimes } from 'react-icons/fa';
 import { Theater } from '../types/type';
+import { adminApi } from '@/utils/api';
 
 interface EditTheaterModalProps {
   onClose: () => void;
@@ -26,7 +27,7 @@ const EditTheaterModal: React.FC<EditTheaterModalProps> = ({ onClose, id ,onSucc
  
   const fetchTheater = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/admin/get-theater-by-id/${id}`);
+      const response = await adminApi.get(`/get-theater-by-id/${id}`);
       const fetchedTheater = response.data.theater;
       setTheater(fetchedTheater);
       setName(fetchedTheater.name);
@@ -42,7 +43,7 @@ const EditTheaterModal: React.FC<EditTheaterModalProps> = ({ onClose, id ,onSucc
     
     e.preventDefault();
     try {
-      const response = await axios.put(`http://localhost:5000/api/admin/update-theater/${id}`, {
+      const response = await adminApi.put(`/update-theater/${id}`, {
         name,
         location
       });

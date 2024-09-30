@@ -5,6 +5,7 @@ import { toast, Toaster } from "react-hot-toast";
 import { FaSearch, FaChevronLeft, FaChevronRight, FaEnvelope, FaTicketAlt } from 'react-icons/fa';
 import Image from 'next/image';
 import { format } from 'date-fns';
+import { adminApi } from "@/utils/api";
 
 interface User {
   _id: string;
@@ -31,7 +32,7 @@ const Users: React.FC = () => {
 
   const fetchUsers = useCallback(async () => {
     try {
-      const response = await axios.get<ApiResponse<User[]>>(`${api}/admin/users`);
+      const response = await adminApi.get<ApiResponse<User[]>>(`/users`);
       setUsers(response.data.data);
     } catch (error) {
       console.error("Error fetching users:", error);

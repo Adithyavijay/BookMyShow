@@ -1,13 +1,8 @@
 import React from 'react';
 import AdminLogin from '@/modules/admin/login/adminLogin';
 
-const page = () => {
+export default function AdminLoginPage() {
   return (
-    <div>
-         <AdminLogin/>
-
-    </div>
+    <div><AdminLogin/></div>
   )
 }
-
-export default page

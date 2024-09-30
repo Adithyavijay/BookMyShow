@@ -137,7 +137,7 @@ const SeatSelection: React.FC<SeatSelectionProps> = ({ showtimeId, quantity }) =
         },
         prefill: {
           name: "John Doe",
-          email: "johndoe@example.com",
+          email: "adithya@example.com",
           contact: "9999999999"
         },
         theme: {

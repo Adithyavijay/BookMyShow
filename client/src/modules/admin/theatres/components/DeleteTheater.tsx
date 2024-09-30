@@ -5,6 +5,7 @@
 import React from 'react';
 import axios from 'axios';
 import { FaTimes } from 'react-icons/fa';
+import { adminApi } from '@/utils/api';
 
 interface DeleteTheaterModalProps {
   onClose: () => void;
@@ -21,7 +22,7 @@ const DeleteTheaterModal: React.FC<DeleteTheaterModalProps> = ({ onClose, theate
     setIsDeleting(true);
     setError('');
     try {
-      await axios.delete(`http://localhost:5000/api/admin/delete-theater/${theaterId}`);
+      await adminApi.delete(`/delete-theater/${theaterId}`);
       onDeleteSuccess();
       onClose();
     } catch (error) {

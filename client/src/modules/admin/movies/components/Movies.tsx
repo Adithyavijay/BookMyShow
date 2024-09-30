@@ -6,6 +6,7 @@ import EditMovie from "./EditMovie";
 import DeleteMovie from "./DeleteMovie";
 import { toast, Toaster } from "react-hot-toast";
 import MovieDetails from "./MovieDetails";
+import { api } from "@/utils/api";
 import Image from 'next/image';
 import { FaSearch, FaPlus, FaEdit, FaTrash, FaChevronLeft, FaChevronRight ,FaEye} from 'react-icons/fa';
 
@@ -41,12 +42,11 @@ const Movies: React.FC = () => {
   const [moviesPerPage] = useState(2);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
 
-  const api = process.env.API_BASE_URL;
-  const baseApi = process.env.BASE_URL;
+
 
   const fetchMovies = useCallback(async () => {
     try {
-      const response = await axios.get<ApiResponse<Movie[]>>(`${api}/user/movies`);
+      const response = await api.get<ApiResponse<Movie[]>>(`/user/movies`);
       setMovies(response.data.data);
     } catch (error) {
       console.error("Error fetching movies:", error);

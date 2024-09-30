@@ -54,9 +54,9 @@ class MovieRepository {
      * @desc Retrieve all movies from the database with populated theater names
      * @returns {Promise<Array>} An array of all movie objects with populated theater names
      */
-    async findAll() {
-        return await Movie.find().populate('theaters', 'name');
-    }
+        async findAll() {
+            return await Movie.find().populate('theaters', 'name');
+        }
 }
 
 export default new MovieRepository();
