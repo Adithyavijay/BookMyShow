@@ -60,10 +60,11 @@ const AddShowtime: React.FC<AddShowTimeProps> = ({ onClose ,onSuccess}) => {
     const today = new Date();
     return today.toISOString().split('T')[0];
   };
-
   useEffect(() => {
     if (selectedMovie && selectedTheater && date) {
-      fetchExistingShowtimes(); 
+      fetchExistingShowtimes();
+    } else {
+      setExistingShowtimes([]); // Clear existing showtimes when any selection changes
     }
   }, [selectedMovie, selectedTheater, date]);
 
@@ -98,16 +99,20 @@ const AddShowtime: React.FC<AddShowTimeProps> = ({ onClose ,onSuccess}) => {
 
 
   const isTimeSlotAvailable = (slot: typeof TIME_SLOTS[0]) => {
-    if (!existingShowtimes.length) return true;
+    if (!existingShowtimes.length) {
+      // Check if the slot is in the past for today's date
+      if (date === getTodayDate()) {
+        const now = new Date();
+        const slotEnd = new Date(`${date}T${slot.end}`);
+        if (slotEnd <= now) {
+          return false;
+        }
+      }
+      return true;
+    }
     
-    const now = new Date();
     const slotStart = new Date(`${date}T${slot.start}`);
     const slotEnd = new Date(`${date}T${slot.end}`);
-    
-    // Check if the slot is in the past for today's date
-    if (date === getTodayDate() && slotEnd <= now) {
-      return false;
-    }
     
     return !existingShowtimes.some(showtime => {
       const showtimeStart = new Date(showtime.startTime);
@@ -135,13 +140,16 @@ const AddShowtime: React.FC<AddShowTimeProps> = ({ onClose ,onSuccess}) => {
   
 
   const handleMovieChange = (e: React.ChangeEvent<HTMLSelectElement>) => { 
-    console.log(movies)
     const movieId = e.target.value;
     const movie = movies.find(m => m._id === movieId) || null;
     setSelectedMovie(movie);
     setSelectedTheater('');
+    setDate('');
+    setSelectedTimeSlot('');
+    setStartTime('');
+    setEndTime('');
+    setExistingShowtimes([]); // Clear existing showtimes when movie changes
   };
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

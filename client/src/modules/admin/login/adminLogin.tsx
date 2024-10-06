@@ -5,17 +5,17 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import { FaUser, FaLock, FaSignInAlt } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
-import UserProfile from '@/modules/user/sign-up/components/userProfile';
 import { useRecoilState } from 'recoil';
 import { adminAuthState } from '../atoms/atom';
+import ClipLoader from "react-spinners/ClipLoader";
 
 const AdminLogin: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [,setIsAdminAuthenticated]=useRecoilState<boolean>(adminAuthState)
-  const router=useRouter();
+  const [,setIsAdminAuthenticated] = useRecoilState<boolean>(adminAuthState);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,18 +23,14 @@ const AdminLogin: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // Replace with your actual API endpoint
       const response = await axios.post('http://localhost:5000/api/admin/login', 
         { email, password },
-        { 
-          withCredentials: true, 
-        }
+        { withCredentials: true }
       );    
-      router.push('/admin/dashboard')
-      // Handle successful login (e.g., store token, redirect) 
-      setIsAdminAuthenticated(true)
-
-     
+      
+      setIsAdminAuthenticated(true);
+      
+      router.push('/admin/dashboard');
     } catch (err) {
       setError('Invalid email or password');
     } finally {
@@ -61,6 +57,7 @@ const AdminLogin: React.FC = () => {
               placeholder="Email"
               className="w-full pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-blue-500"
               required
+              disabled={isLoading}
             />
           </div>
           <div className="relative">
@@ -72,27 +69,28 @@ const AdminLogin: React.FC = () => {
               placeholder="Password"
               className="w-full pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-blue-500"
               required
+              disabled={isLoading}
             />
           </div>
           {error && <p className="text-red-500 text-sm">{error}</p>}
           <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: isLoading ? 1 : 1.05 }}
+            whileTap={{ scale: isLoading ? 1 : 0.95 }}
             type="submit"
-            className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-2 rounded-lg hover:opacity-90 transition duration-300"
+            className={`w-full py-2 rounded-lg transition duration-300 flex items-center justify-center
+              ${isLoading 
+                ? 'bg-gray-400 cursor-not-allowed' 
+                : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:opacity-90'
+              } text-white`}
             disabled={isLoading}
           >
             {isLoading ? (
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                className="w-6 h-6 border-t-2 border-b-2 border-white rounded-full mx-auto"
-              ></motion.div>
+              <ClipLoader color="#ffffff" size={24} />
             ) : (
-              <div className="flex items-center justify-center">
+              <>
                 <FaSignInAlt className="mr-2" />
                 <span>Login</span>
-              </div>
+              </>
             )}
           </motion.button>
         </form>

@@ -73,8 +73,19 @@ const BookingPage: React.FC<BookingPageProps> = ({ id }) => {
 
   if (isLoading) {
     return (
-        <div className="flex justify-center items-center h-screen">
-            <ClipLoader color="#4A90E2" size={50} />
+        <div className="fixed inset-0 bg-gray-100 flex justify-center items-center z-50">
+            <div className="text-center">
+                <ClipLoader color="#4A90E2" size={50} />
+                <p className="mt-4 text-lg font-semibold text-gray-700">Loading showtimes...</p>
+            </div>
+        </div>
+    );
+}
+
+if (showtimes.length === 0) {
+    return (
+        <div className="container mx-auto py-8 text-center h-60 flex items-center justify-center">
+            <p className="text-xl text-gray-700">No showtimes available for this movie.</p>
         </div>
     );
 }
