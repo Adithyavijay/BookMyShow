@@ -51,8 +51,10 @@ const AddShowtime: React.FC<AddShowTimeProps> = ({ onClose ,onSuccess}) => {
   const api = process.env.API_BASE_URL ;
   useEffect(() => {
     fetchMovies();
+    
     setMinDate(getTodayDate());
-  }, []);
+  }, []); 
+  console.log(selectedMovie)
 
   const getTodayDate = () => {
     const today = new Date();
@@ -61,7 +63,7 @@ const AddShowtime: React.FC<AddShowTimeProps> = ({ onClose ,onSuccess}) => {
 
   useEffect(() => {
     if (selectedMovie && selectedTheater && date) {
-      fetchExistingShowtimes();
+      fetchExistingShowtimes(); 
     }
   }, [selectedMovie, selectedTheater, date]);
 
@@ -130,8 +132,10 @@ const AddShowtime: React.FC<AddShowTimeProps> = ({ onClose ,onSuccess}) => {
       setLoading(false);
     }
   };
+  
 
-  const handleMovieChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleMovieChange = (e: React.ChangeEvent<HTMLSelectElement>) => { 
+    console.log(movies)
     const movieId = e.target.value;
     const movie = movies.find(m => m._id === movieId) || null;
     setSelectedMovie(movie);

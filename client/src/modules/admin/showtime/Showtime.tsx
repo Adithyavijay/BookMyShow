@@ -48,7 +48,7 @@ const ShowTimes: React.FC = () => {
   });
 
     const api = process.env.API_BASE_URL;
-
+  
     useEffect(() => {
         fetchShowTimes();
     }, []);

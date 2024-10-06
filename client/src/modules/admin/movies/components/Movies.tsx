@@ -9,6 +9,7 @@ import MovieDetails from "./MovieDetails";
 import { api } from "@/utils/api";
 import Image from 'next/image';
 import { FaSearch, FaPlus, FaEdit, FaTrash, FaChevronLeft, FaChevronRight ,FaEye} from 'react-icons/fa';
+import { adminApi } from "@/utils/api";
 
 interface Movie {
   _id: string;
@@ -52,7 +53,7 @@ const Movies: React.FC = () => {
       console.error("Error fetching movies:", error);
       toast.error("Failed to fetch movies");
     }
-  }, [api]);
+  }, []);
 
   useEffect(() => {
     fetchMovies();
@@ -91,7 +92,7 @@ const Movies: React.FC = () => {
   const handleAddMovie = async (movieData: MovieFormData) => {
     try {
       const formData = createFormData(movieData);
-      const response = await axios.post(`${api}/admin/movies`, formData, {
+      const response = await adminApi.post('/movies', formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -109,8 +110,8 @@ const Movies: React.FC = () => {
   const handleEditMovie = async (movieData: MovieFormData, movieId: string) => {
     try {
       const formData = createFormData(movieData);
-      const response = await axios.put(
-        `${api}/admin/update-movies/${movieId}`,
+      const response = await adminApi.put(
+        `/update-movies/${movieId}`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );

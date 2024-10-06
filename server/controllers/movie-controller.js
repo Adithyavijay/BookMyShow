@@ -78,7 +78,8 @@ const movieController = {
    * @param   {Object} res - Express response object
    * @returns {Object} JSON object with all movies
    */
-  async getAllMovies(req, res) {
+  async getAllMovies(req, res) { 
+    console.log('sdafsf')
     try {
       const movies = await movieRepository.findAll();
       const formattedMovies= movies.map(movie=>formatMovie(movie))
@@ -139,7 +140,7 @@ const movieController = {
         theaters,
         castNames
       } = req.body;
-
+      console.log('theaters',theaters)
       let movie = await movieRepository.findById(id);
       if (!movie) {
         return res.status(404).json({ status:false,message: 'Movie not found' });
