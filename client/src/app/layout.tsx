@@ -5,7 +5,6 @@ import RecoilProvider from '../providers/RecoilProvider';
 import GoogleOAuthProviderWrapper from "@/providers/GoogleAuthProviderWrapper";
 import Header from "@/modules/user/layout/components/Header";
 import ModalManager from "@/modules/user/layout/components/ModalManager";
-import Script from 'next/script';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,13 +19,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en"> 
-     <head>
-        <Script
-          src="https://checkout.razorpay.com/v1/checkout.js"
-          strategy="beforeInteractive"
-        />
-      </head>
+    <html lang="en">  
+ 
     <RecoilProvider >
     <GoogleOAuthProviderWrapper>
       <ModalManager/>

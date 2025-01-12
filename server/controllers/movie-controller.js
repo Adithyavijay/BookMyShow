@@ -79,7 +79,7 @@ const movieController = {
    * @returns {Object} JSON object with all movies
    */
   async getAllMovies(req, res) { 
-    console.log('sdafsf')
+    
     try {
       const movies = await movieRepository.findAll();
       const formattedMovies= movies.map(movie=>formatMovie(movie))

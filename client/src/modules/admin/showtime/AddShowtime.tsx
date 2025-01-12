@@ -54,7 +54,7 @@ const AddShowtime: React.FC<AddShowTimeProps> = ({ onClose ,onSuccess}) => {
     
     setMinDate(getTodayDate());
   }, []); 
-  console.log(selectedMovie)
+  
 
   const getTodayDate = () => {
     const today = new Date();
@@ -166,7 +166,6 @@ const AddShowtime: React.FC<AddShowTimeProps> = ({ onClose ,onSuccess}) => {
     };
       try {
       const response = await adminApi.post(`/add-showtime`, showtimeData);
-      console.log(response);
       if (response.status === 201) { 
         onSuccess();
         toast.success('Showtime added successfully');
@@ -230,9 +229,20 @@ const AddShowtime: React.FC<AddShowTimeProps> = ({ onClose ,onSuccess}) => {
               </select>
             </div>
 
-            {/* Date Picker */}
+            {/* Date Picker - start date */}
             <div className='flex flex-col'>
-              <label htmlFor="date" className='font-medium text-sm mb-1'>Select Date</label>
+              <label htmlFor="date" className='font-medium text-sm mb-1'>Select Start Date</label>
+              <input
+                type="date"
+                id="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                min={getTodayDate()} // Set minimum date to today
+                className='border rounded-md px-3 py-2' />
+            </div> 
+            {/* end date */}
+            <div className='flex flex-col'>
+              <label htmlFor="date" className='font-medium text-sm mb-1'>Select End Date</label>
               <input
                 type="date"
                 id="date"
@@ -241,6 +251,7 @@ const AddShowtime: React.FC<AddShowTimeProps> = ({ onClose ,onSuccess}) => {
                 min={getTodayDate()} // Set minimum date to today
                 className='border rounded-md px-3 py-2' />
             </div>
+
 
             {/* Start Time Picker */}
             <div className='flex flex-col'>

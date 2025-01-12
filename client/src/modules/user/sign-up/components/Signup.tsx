@@ -3,8 +3,8 @@ import { useRecoilState } from "recoil";
 import { signupModalState } from "@/atoms/modalAtom";
 import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import axios from "axios";
-import { useRouter } from "next/navigation";
 import OtpInput from "react-otp-input";
+import { useRouter } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
 import ClipLoader from "react-spinners/ClipLoader";
 import { userState } from "@/atoms/modalAtom";
@@ -22,7 +22,6 @@ const GoogleAuthModal: React.FC = () => {
     const [canResend, setCanResend] = useState(false);
     const [currentUserEmail, setCurrentUserEmail] = useState("");
     const api = process.env.API_BASE_URL;
-    const router = useRouter();
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -50,14 +49,12 @@ const GoogleAuthModal: React.FC = () => {
     }, [showOtpInput, timer]);
 
     const handleGoogleLoginSuccess = async (credentialResponse: CredentialResponse) => {
-        console.log("Google Sign-In Successful:", credentialResponse);
         if (credentialResponse.credential) {
             setLoading(true);
             try {
                 const response = await axios.post(`${api}/user/auth/google-callback`, {
                     credential: credentialResponse.credential,
                 });
-                console.log(response.data);
                 if (response.data.user.requireTwoFactorAuth) {
                     setShowOtpInput(true);
                     setCurrentUserEmail(response.data.user.email);

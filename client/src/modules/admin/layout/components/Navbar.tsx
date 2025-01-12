@@ -18,7 +18,7 @@ export default function Navbar(): JSX.Element {
     // Check for admin authentication status when component mounts
     checkAdminAuth();
   }, [isAdminAuthenticated]);
-  console.log(isAdminAuthenticated)
+ 
   const checkAdminAuth = async () => {
     try {
       const response = await axios.get('http://localhost:5000/api/admin/check-auth', { withCredentials: true });

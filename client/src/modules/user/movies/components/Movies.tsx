@@ -111,7 +111,7 @@ const Movies: React.FC = () => {
                                 <div className="flex items-center">
                                     <span className="text-yellow-400 mr-1">★</span>
                                     <span>{movie.averageRating.toFixed(1)}/5</span>
-                                    <span className="ml-2 text-sm">{movie.ratings.length} Ratings</span>
+                                    {/* <span className="ml-2 text-sm">{movie.ratings.length} Ratings</span> */}
                                 </div>
                             </div>
                         </div>

@@ -78,7 +78,7 @@ class PaymentRepository {
         });
         return await booking.save();
     }
-
+    
     /**
      * @desc Create a new ticket with QR code
      * @param {Object} booking - The booking object

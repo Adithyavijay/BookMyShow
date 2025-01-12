@@ -13,7 +13,6 @@ async function validateAdminToken(cookieValue: string): Promise<boolean> {
       }
     });
 
-    console.log('Token validation response:', response.data);
     return response.data.isValid;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -30,12 +29,10 @@ export async function middleware(request: NextRequest) {
   const isAdminRoute = request.nextUrl.pathname.startsWith('/admin');
   const isLoginPage = request.nextUrl.pathname === '/admin/login';
   const isExactAdminRoute = request.nextUrl.pathname === '/admin';
-
   let isValidToken = false;
   if (adminToken) {
     isValidToken = await validateAdminToken(adminToken);
   }
-  console.log(isValidToken);
 
   // Handle the exact '/admin' route
   if (isExactAdminRoute) {

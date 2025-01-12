@@ -22,7 +22,7 @@ class ShowtimeController {
      * @param {Object} res - Express response object
      * @returns {Object} JSON response with the created showtime
      */
-    async addShowTime(req, res) {
+    async addShowTime(req, res) { 
         try {
             const {
                 movie,

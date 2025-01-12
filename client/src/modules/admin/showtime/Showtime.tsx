@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ChangeEvent,useRef } from "react";
 import axios from "axios";
 import { toast, Toaster } from "react-hot-toast";
 import AddShowtime from "./AddShowtime";
@@ -45,8 +45,8 @@ const ShowTimes: React.FC = () => {
   const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; showtimeId: string | null }>({
     isOpen: false,
     showtimeId: null
-  });
-
+  }); 
+ 
     const api = process.env.API_BASE_URL;
   
     useEffect(() => {
@@ -101,9 +101,8 @@ const ShowTimes: React.FC = () => {
 
   const handleDeleteSuccess = () => {
     fetchShowTimes();
-  };
-
-
+  }; 
+ 
     if (isLoading) {
         return (
             <div className="flex justify-center items-center h-screen">
@@ -111,11 +110,11 @@ const ShowTimes: React.FC = () => {
             </div>
         );
     }
+    
 
     return (
-        <div className="p-8 bg-gradient-to-br from-purple-100 to-indigo-100 min-h-screen">
-           
-            <div className="mb-8">
+        <div className="p-8 bg-gradient-to-br from-purple-100 to-indigo-100 min-h-screen "> 
+            <div className="mb-8">  
                 <h1 className="text-3xl font-bold text-indigo-800 mb-4">Showtime Management</h1>
                 <div className="flex justify-between items-center">
                     <div className="relative">
@@ -142,7 +141,8 @@ const ShowTimes: React.FC = () => {
                         <tr>
                             <th className="p-3 text-left">Movie</th>
                             <th className="p-3 text-left">Theater</th>
-                            <th className="p-3 text-left">Date</th>
+                            <th className="p-3 text-left">Start Date</th>
+                            <th className="p-3 text-left">End Date</th>
                             <th className="p-3 text-left">Start Time</th>
                             <th className="p-3 text-left">End Time</th>
                             <th className="p-3 text-center">Cancellable</th>
@@ -155,6 +155,7 @@ const ShowTimes: React.FC = () => {
                             <tr key={showTime._id} className="border-b hover:bg-gray-50">
                                 <td className="p-3">{showTime.movie.title}</td>
                                 <td className="p-3">{showTime.theater.name}</td>
+                                <td className="p-3">{new Date(showTime.date).toLocaleDateString()}</td>
                                 <td className="p-3">{new Date(showTime.date).toLocaleDateString()}</td>
                                 <td className="p-3">{new Date(showTime.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
                                 <td className="p-3">{new Date(showTime.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>

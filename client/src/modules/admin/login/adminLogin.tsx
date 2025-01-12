@@ -29,7 +29,6 @@ const AdminLogin: React.FC = () => {
       );    
       
       setIsAdminAuthenticated(true);
-      
       router.push('/admin/dashboard');
     } catch (err) {
       setError('Invalid email or password');
