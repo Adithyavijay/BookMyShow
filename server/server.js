@@ -14,7 +14,7 @@ const app = express();
 
 
 app.use(cors({
-  origin: 'http://localhost:3000', // Allows request from 3000
+  origin: 'https://bookmyshow.entebuddy.in', // Allows request from 3000
   credentials: true,
 }));
 
@@ -54,4 +54,3 @@ app.use('/api/user', userRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port http://localhost:${PORT}`));
-
