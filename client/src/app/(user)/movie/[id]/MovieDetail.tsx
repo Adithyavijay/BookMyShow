@@ -26,7 +26,7 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ id }) => {
 
     const fetchMovie = async () => {
         try {
-            const response = await axios.get(`http://localhost:5000/api/user/movie/${id}`);
+            const response = await axios.get(`${process.env.API_BASE_URL}/user/movie/${id}`);
            
             setMovie(response.data.data);
         } catch (error) {
