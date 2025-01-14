@@ -14,7 +14,7 @@ const app = express();
 
 
 app.use(cors({
-  origin: 'https://bookmyshow.entebuddy.in', // Allows request from 3000
+  origin: 'https://bookmyshow.entebuddy.in',  
   credentials: true,
 }));
 
