@@ -15,7 +15,7 @@ const Movies: React.FC = () => {
     const [selectedGenre, setSelectedGenre] = useState<string>('');
     const [selectedLanguage, setSelectedLanguage] = useState<string>('');
     const [sortByRating, setSortByRating] = useState<boolean>(false);
-    const api = 'http://localhost:5000/api'; 
+    const api = process.env.API_BASE_URL; 
     const router = useRouter(); 
 
     useEffect(() => {
