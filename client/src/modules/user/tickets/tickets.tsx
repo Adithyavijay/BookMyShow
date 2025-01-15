@@ -24,7 +24,7 @@
 
     const fetchTickets = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/user/tickets');
+        const response = await axios.get(`${process.env.API_BASE_URL}/user/tickets`);
         setTickets(response.data.data);
         setIsLoading(false);
       } catch (error) {

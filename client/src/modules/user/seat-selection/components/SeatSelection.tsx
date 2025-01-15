@@ -38,7 +38,7 @@ const SeatSelection: React.FC<SeatSelectionProps> = ({ showtimeId, quantity }) =
   const fetchSeats = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5000/api/user/seats/${showtimeId}`);
+      const response = await axios.get(`${process.env.API_BASE_URL}/user/seats/${showtimeId}`);
       console.log(response.data)
       setSeats(response.data.data.seats);  
       // Assuming the price is returned from the API. If not, you'll need to set it manually or fetch it separately.
@@ -100,7 +100,7 @@ const SeatSelection: React.FC<SeatSelectionProps> = ({ showtimeId, quantity }) =
 
     setIsLoading(true);
     try {
-      const orderResponse = await axios.post('http://localhost:5000/api/user/create-order', {
+      const orderResponse = await axios.post(`${process.env.API_BASE_URL}/user/create-order`, {
         amount: totalPrice * quantity *100,
         showtimeId,
         seats: selectedSeats,
@@ -115,7 +115,7 @@ const SeatSelection: React.FC<SeatSelectionProps> = ({ showtimeId, quantity }) =
         order_id: orderResponse.data.orderId,
         handler: async function (response: any) {
           try {
-            const verificationResponse = await axios.post('http://localhost:5000/api/user/verify-order', {
+            const verificationResponse = await axios.post(`${process.env.API_BASE_URL}/user/verify-order`, {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
