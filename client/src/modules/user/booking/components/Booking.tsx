@@ -61,7 +61,7 @@ const BookingPage: React.FC<BookingPageProps> = ({ id }) => {
       setIsLoading(true);
       try {
           const response = await axios.get(
-              `http://localhost:5000/api/user/showtimes/${id}`
+              `${process.env.API_BASE_URL}/user/showtimes/${id}`
           );
           setShowtimes(response.data.data);
       } catch (error) {
