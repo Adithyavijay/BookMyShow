@@ -27,7 +27,7 @@ const AddCast: React.FC<AddCastProps> = ({ isOpen, onClose, onAddCast, initialCa
         setCastMembers(initialCast);
         setErrors(initialCast.map(() => ({ name: false, photo: false })));
         setPhotoPreviews(initialCast.map(member => 
-          typeof member.castPhoto === 'string' ? `http://localhost:5000${member.castPhoto}` : null
+          typeof member.castPhoto === 'string' ? `${process.env.BASE_URL}${member.castPhoto}` : null
         ));
       } else {
         setCastMembers([{ castName: '', castPhoto: null }]);

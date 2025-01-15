@@ -186,7 +186,7 @@ const Movies: React.FC = () => {
                 <td className="p-3">
                   <div className="relative w-24 h-28 overflow-hidden rounded-lg">
                     <Image
-                      src={`http://localhost:5000${movie.photos[0] || movie.poster}`}
+                      src={`${process.env.BASE_URL}${movie.photos[0] || movie.poster}`}
                       alt={movie.title}
                       layout="fill"
                       objectFit="cover"
