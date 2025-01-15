@@ -43,7 +43,11 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(  path.join(path.resolve(),'server' ,'public')));
 
-console.log(path.resolve())
+app.use((req, res, next) => {
+  console.log('Session data:', req.session.otp);
+  next();
+});
+
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to the Movie Verification API' });
 });

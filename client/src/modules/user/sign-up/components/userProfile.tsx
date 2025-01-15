@@ -39,7 +39,7 @@ const UserProfile: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-    const response = await axios.get('http://localhost:5000/api/user/logout')
+    const response = await axios.get(`${process.env.API_BASE_URL}/user/logout`)
     console.log(response.data) 
       setUser(null)
       localStorage.removeItem('userInfo');
