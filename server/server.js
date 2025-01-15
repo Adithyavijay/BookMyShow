@@ -25,7 +25,7 @@ app.use(session({
   resave: true,
   saveUninitialized: true,
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+    secure: false, // Use secure cookies in production
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
@@ -43,10 +43,6 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(  path.join(path.resolve(),'server' ,'public')));
 
-app.use((req, res, next) => {
-  console.log('Session data:', req.session.otp);
-  next();
-});
 
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to the Movie Verification API' });
