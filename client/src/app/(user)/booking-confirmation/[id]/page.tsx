@@ -34,7 +34,7 @@ export default function BookingConfirmation({
     const fetchTicketInfo = async () => {
         try {
             const response = await axios.get(
-                `http://localhost:5000/api/user/get-ticket/${params.id}`
+                `${process.env.API_BASE_URL}/user/get-ticket/${params.id}`
             );
             setTicketInfo(response.data.data);
         } catch (error) {
@@ -48,7 +48,7 @@ export default function BookingConfirmation({
         e.preventDefault();
         setIsLoading(true);
         try {
-            await axios.post("http://localhost:5000/api/user/send-whatsapp", {
+            await axios.post(`${process.env.API_BASE_URL}/user/send-whatsapp`, {
                 ticketId: params.id,
                 whatsappNumber,
             });
