@@ -7,7 +7,7 @@ import axios from 'axios';
 // Function to validate the admin token
 async function validateAdminToken(cookieValue: string): Promise<boolean> {
   try {
-    const response = await axios.get('http://localhost:5000/api/admin/validate-token', {
+    const response = await axios.get(`${process.env.API_BASE_URL}/admin/validate-token`, {
       headers: {
         Cookie: `adminToken=${cookieValue}`
       }
