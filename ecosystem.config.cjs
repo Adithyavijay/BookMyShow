@@ -4,7 +4,7 @@ module.exports = {
         name: "client-build-start", // Process for building the client
         script: "npm",
         args: "run build-and-start-client",
-        cwd: "/root/BookMyShow/client", // Root directory
+        cwd: "/root/BookMyShow", // Root directory
         autorestart: false, // No need to restart the build process
       },
       {
