@@ -21,7 +21,7 @@ export default function Navbar(): JSX.Element {
  
   const checkAdminAuth = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/admin/check-auth', { withCredentials: true });
+      const response = await axios.get(`${process.env.API_BASE_URL}/admin/check-auth`, { withCredentials: true });
       console.log(response.data)
       setIsAdminAuthenticated(response.data.isAuthenticated);
     } catch (error) {
