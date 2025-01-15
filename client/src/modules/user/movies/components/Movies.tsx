@@ -101,8 +101,8 @@ const Movies: React.FC = () => {
                 {filteredAndSortedMovies.map((movie) => (
                     <div key={movie._id} className="flex flex-col">
                         <div onClick={() => handleClick(movie._id)} className="relative h-80 mb-2 rounded-lg overflow-hidden shadow-lg cursor-pointer hover:scale-105 transition-all">
-                            <Image 
-                                src={`${process.env.BASE_URL}${movie.photos[0]}`} 
+                            <Image  
+                                src={`http://localhost:5010${movie.photos[0]}`} 
                                 alt={movie.title}
                                 layout="fill"
                                 objectFit="cover"
@@ -111,7 +111,7 @@ const Movies: React.FC = () => {
                                 <div className="flex items-center">
                                     <span className="text-yellow-400 mr-1">★</span>
                                     <span>{movie.averageRating.toFixed(1)}/5</span>
-                                    {/* <span className="ml-2 text-sm">{movie.ratings.length} Ratings</span> */}
+                                    <span className="ml-2 text-sm">{movie.ratings} Ratings</span>
                                 </div>
                             </div>
                         </div>

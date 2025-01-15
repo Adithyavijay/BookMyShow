@@ -20,6 +20,7 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ id }) => {
     const router = useRouter();
     const user = useRecoilValue(userState);
 
+    console.log(process.env.BASE_URL)
     useEffect(() => {
         fetchMovie();
     }, []);
@@ -44,7 +45,7 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ id }) => {
             return;
         }
         try {
-            await axios.post(`http://localhost:5000/api/user/movie/${id}/review`, {
+            await axios.post(`${process.env.API_BASE_URL}/user/movie/${id}/review`, {
                 text: userReview,
                 rating: userRating,
                 userId: user.id
@@ -64,14 +65,14 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ id }) => {
         <div>
             {/* Hero Section with Poster and Details */}
             <div className="relative h-[70vh]">
-                <div className="absolute inset-0 bg-cover bg-center z-0" style={{backgroundImage: `url(http://localhost:5000${movie.poster})`, filter: 'blur(5px) brightness(0.3)'}}></div>
+                <div className="absolute inset-0 bg-cover bg-center z-0" style={{backgroundImage: `url(${process.env.BASE_URL}${movie.poster})`, filter: 'blur(5px) brightness(0.3)'}}></div>
                 
                 <div className="relative z-10 container mx-auto px-4 h-full flex items-center justify-center">
                     <div className="flex flex-col md:flex-row gap-8 items-center max-w-6xl w-full">
                         {/* Movie Poster */}
                         <div className="md:w-1/3 flex justify-center">
                             <Image 
-                                src={`http://localhost:5000${movie.poster}`} 
+                                src={`${process.env.BASE_URL}${movie.poster}`} 
                                 alt={movie.title} 
                                 width={300} 
                                 height={450} 
@@ -126,7 +127,7 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ id }) => {
                 <div key={index} className="text-center group">
                     <div className="relative overflow-hidden rounded-full mb-3">
                         <Image 
-                            src={`http://localhost:5000${member.castPhoto}`} 
+                            src={`${process.env.BASE_URL}${member.castPhoto}`} 
                             alt={member.castName} 
                             width={120} 
                             height={120} 

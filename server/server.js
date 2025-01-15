@@ -43,7 +43,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(  path.join(path.resolve(),'server' ,'public')));
 
-
+console.log(path.resolve())
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to the Movie Verification API' });
 });
