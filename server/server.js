@@ -42,7 +42,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
-  logger.info(`sessionId : ${req.sessionID}`);
+  logger.info(`sessionId : ${req.sessionID} , session : ${req.session}`);
   next();
 });
 
