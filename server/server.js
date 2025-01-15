@@ -7,6 +7,7 @@ import userRoutes from './routes/user.js';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import logger from './utils/logger.js';
 
 dotenv.config();
 
@@ -40,6 +41,10 @@ mongoose.connect(process.env.MONGODB_URI)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use((req, res, next) => {
+  logger.info(`sessionId : ${req.sessionID}`);
+  next();
+});
 
 app.use(express.static(  path.join(path.resolve(),'server' ,'public')));
 
