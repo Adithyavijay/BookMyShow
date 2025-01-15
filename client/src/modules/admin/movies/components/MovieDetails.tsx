@@ -57,7 +57,7 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movieId, onClose }) => {
         <div className="flex flex-col md:flex-row gap-8 mb-8">
           <div className="md:w-1/3 ">
             <Image
-              src={`http://localhost:5000${movie.poster}`}
+              src={`${process.env.BASE_URL}${movie.poster}`}
               alt={movie.title}
               width={400}
               height={450}
@@ -89,7 +89,7 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movieId, onClose }) => {
               <div key={index} className="text-center group">
                 <div className="w-32 h-32 mx-auto mb-3 relative overflow-hidden rounded-full shadow-lg transform group-hover:scale-105 transition-transform duration-300">
                   <Image
-                    src={`http://localhost:5000${castMember.castPhoto}`}
+                    src={`${process.env.BASE_URL}${castMember.castPhoto}`}
                     alt={castMember.castName}
                     layout="fill"
                     objectFit="cover"
@@ -107,7 +107,7 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movieId, onClose }) => {
     {movie.photos.map((photo: string, index: number) => (
       <div key={index} className="relative w-full pb-[100%] overflow-hidden rounded-lg shadow-md transform hover:scale-105 transition-transform duration-300">
         <Image
-          src={`http://localhost:5000${photo}`}
+          src={`${process.env.BASE_URL}${photo}`}
           alt={`Movie photo ${index + 1}`}
           layout="fill"
           objectFit="cover"
