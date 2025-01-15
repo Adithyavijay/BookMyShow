@@ -6,12 +6,15 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const uploadDir = path.join(__dirname, '..', 'public', 'uploads');
+const UPLOAD_DIR =
+  process.env.NODE_ENV === 'production'
+    ? '/var/www/BookMyShow/server/public/uploads'
+    : path.join(path.resolve(), 'server', 'public', 'uploads');
 
 // Configure storage
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, uploadDir) 
+    cb(null, UPLOAD_DIR) 
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
