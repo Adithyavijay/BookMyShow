@@ -102,7 +102,7 @@ const Movies: React.FC = () => {
                     <div key={movie._id} className="flex flex-col">
                         <div onClick={() => handleClick(movie._id)} className="relative h-80 mb-2 rounded-lg overflow-hidden shadow-lg cursor-pointer hover:scale-105 transition-all">
                             <Image  
-                                src={`http://localhost:5010${movie.photos[0]}`} 
+                                src={`${process.env.BASE_URL}${movie.photos[0]}`} 
                                 alt={movie.title}
                                 layout="fill"
                                 objectFit="cover"
