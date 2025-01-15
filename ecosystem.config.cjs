@@ -10,7 +10,7 @@ module.exports = {
       {
         name: "server", // Process for starting the server
         script: "npm",
-        args: "start-server",
+        args: "start",
         cwd: "/root/BookMyShow", // Root directory
         env: {
           NODE_ENV: "production",
