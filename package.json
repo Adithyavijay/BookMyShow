@@ -26,6 +26,7 @@
   "type": "module",
   "scripts": {
     "start": "node server/server.js",
+    "build-and-start-client":"cd client && npm run build && npm start",
     "server": "nodemon server/server.js",
     "client": "npm run dev --prefix client",
     "dev": " concurrently \"npm run server\" \"npm run client\"",
