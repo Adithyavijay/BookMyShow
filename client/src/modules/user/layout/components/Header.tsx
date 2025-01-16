@@ -1,10 +1,10 @@
-// components/Header.tsx
 'use client'
 import React, { useState, useEffect, useRef } from 'react'
 import Image from 'next/image';
 import { IoIosSearch } from "react-icons/io";
 import { IoChevronDownOutline } from "react-icons/io5";
 import { HiBars3 } from "react-icons/hi2";
+import { IoMdClose } from "react-icons/io";
 import { useRecoilState } from 'recoil';
 import { signupModalState, userState } from '@/atoms/modalAtom';
 import UserProfile from '../../sign-up/components/userProfile';
@@ -20,6 +20,7 @@ const Header = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<Movie[]>([]);
   const [showResults, setShowResults] = useState(false);
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
   const handleClick = () => {
@@ -44,6 +45,14 @@ const Header = () => {
     }
   };
 
+  const toggleMobileSearch = () => {
+    setShowMobileSearch(!showMobileSearch);
+    if (!showMobileSearch) {
+      setSearchTerm('');
+      setShowResults(false);
+    }
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
@@ -58,17 +67,53 @@ const Header = () => {
   }, []);
 
   return (
-    <header className='bg-white shadow-md'>
+    <header className='bg-white shadow-md relative'>
+      {/* Mobile Search Overlay */}
+      {showMobileSearch && (
+        <div className="fixed inset-0 bg-white z-50 p-4">
+          <div className="flex items-center mb-4">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={handleSearch}
+              className='flex-1 p-2 pl-10 text-sm bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500' 
+              placeholder='Search for Movies, Events, Plays, Sports'
+              autoFocus
+            />
+            <button 
+              onClick={toggleMobileSearch}
+              className="ml-4 p-2"
+            >
+              <IoMdClose className="text-2xl" />
+            </button>
+          </div>
+          {showResults && (
+            <div className="absolute left-0 right-0 bg-white shadow-lg rounded-b-lg">
+              <SearchResults movies={searchResults} onClose={() => setShowResults(false)} />
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Main Header Content */}
       <div className='container mx-auto px-4 sm:px-6 lg:px-8 py-4'>
         <div className='flex items-center justify-between'> 
           <div className="flex items-center space-x-6">
-            <Image onClick={handleClick} src='/icons/bookmyshow.svg' width={115} height={35} alt='company logo' className="w-28 h-auto cursor-pointer hover:scale-110 transition-transform ease-out"/>
-            <div className="relative" ref={searchRef}>
+            <Image 
+              onClick={handleClick} 
+              src='/icons/bookmyshow.svg' 
+              width={115} 
+              height={35} 
+              alt='company logo' 
+              className="w-24 sm:w-28 h-auto cursor-pointer hover:scale-110 transition-transform ease-out"
+            />
+            {/* Desktop Search */}
+            <div className="hidden md:block relative" ref={searchRef}>
               <input
                 type="text"
                 value={searchTerm}
                 onChange={handleSearch}
-                className='w-64 sm:w-80 md:w-96 p-2 pl-10 text-sm bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-300' 
+                className='w-64 lg:w-96 p-2 pl-10 text-sm bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-300' 
                 placeholder='Search for Movies, Events, Plays, Sports'
               /> 
               <IoIosSearch className='absolute top-1/2 left-3 transform -translate-y-1/2 text-lg text-gray-500' />
@@ -77,25 +122,40 @@ const Header = () => {
               )}
             </div>
           </div>
-          <div className='flex items-center space-x-6'>
-            <div className='flex items-center space-x-1 cursor-pointer hover:text-red-500 transition duration-300'>
+
+          <div className='flex items-center space-x-3 sm:space-x-6'>
+            {/* Mobile Search Icon */}
+            <button 
+              onClick={toggleMobileSearch}
+              className="md:hidden"
+            >
+              <IoIosSearch className="text-xl" />
+            </button>
+
+            <div className='hidden sm:flex items-center space-x-1 cursor-pointer hover:text-red-500 transition duration-300'>
               <span className='text-sm font-medium'>Kochi</span>
               <IoChevronDownOutline className='text-sm'/>
             </div>
-            {user ? <UserProfile/> : 
-               <button onClick={() => setShowModal(true)} className='bg-[#f84464] text-white text-sm py-2 px-6 rounded-full hover:bg-[#e23b59] transition duration-300 font-medium'>
-               Sign in  
-             </button>
-            }
+
+            {user ? (
+              <UserProfile/>
+            ) : (
+              <button 
+                onClick={() => setShowModal(true)} 
+                className='bg-[#f84464] text-white text-xs sm:text-sm py-1.5 sm:py-2 px-4 sm:px-6 rounded-full hover:bg-[#e23b59] transition duration-300 font-medium'
+              >
+                Sign in  
+              </button>
+            )}
            
             <div className='cursor-pointer hover:text-red-500 transition duration-300'>
-              <HiBars3 className='text-2xl' />
+              <HiBars3 className='text-xl sm:text-2xl' />
             </div>   
           </div>
         </div>
       </div>
     </header>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;

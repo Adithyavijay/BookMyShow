@@ -29,7 +29,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ movies, onClose }) => {
             onClick={() => handleMovieClick(movie._id)}
           >
             <Image
-              src={`http://localhost:5000${movie.poster}`}
+              src={`${process.env.API_BASE_URL}${movie.poster}`}
               alt={movie.title}
               width={50}
               height={75}

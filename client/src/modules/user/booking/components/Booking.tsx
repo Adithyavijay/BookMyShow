@@ -175,13 +175,15 @@ if (showtimes.length === 0) {
     const handleCloseModal = () => {    
       setTicketModal({ isOpen: false, showtimeId: null });
     };
+   
     return (
-        <div className="container mx-auto py-8">
-            <h1 className="text-3xl px-20 font-medium mb-2">
+        <div className="container mx-auto py-4 md:py-6 lg:py-8">
+            {/* Movie Title Section - Responsive */}
+            <h1 className="text-xl md:text-2xl lg:text-3xl px-4 md:px-12 lg:px-20 font-medium mb-2">
                 {movie.title} - {movie.language}
             </h1>
-            <div className="text-gray-600 px-20 mb-6 flex items-center">
-                <span className="border border-gray-300 rounded-full text-center mr-3 px-2 py-1 uppercase text-xs font-semibold inline-flex items-center justify-center min-w-[30px] min-h-[30px] bg-gray-100">
+            <div className="text-gray-600 px-4 md:px-12 lg:px-20 mb-4 md:mb-6 flex flex-wrap md:flex-nowrap items-center gap-2">
+                <span className="border border-gray-300 rounded-full text-center px-2 py-1 uppercase text-xs font-semibold inline-flex items-center justify-center min-w-[30px] min-h-[30px] bg-gray-100">
                     {movie.certificate}
                 </span>
                 <span className="border border-gray-300 text-sm px-3 py-1 rounded-full bg-gray-100">
@@ -190,16 +192,19 @@ if (showtimes.length === 0) {
             </div>
             <div className="w-full h-[1px] bg-gray-300 my-2"></div>
 
-            <div className="flex px-20 justify-between items-center space-y-4 mb-6">
-                <CustomDatePicker
-                    selectedDate={selectedDate}
-                    onChange={setSelectedDate}
-                />
-                <div className="flex space-x-4">
+            {/* Filters Section - Responsive */}
+            <div className="flex flex-col md:flex-row px-4 md:px-12 lg:px-20 justify-between items-start md:items-center space-y-4 md:space-y-0 mb-6">
+                <div className="w-full md:w-auto">
+                    <CustomDatePicker
+                        selectedDate={selectedDate}
+                        onChange={setSelectedDate}
+                    />
+                </div>
+                <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
                     <select
                         value={priceRange}
                         onChange={(e) => setPriceRange(e.target.value)}
-                        className="border p-2 rounded"
+                        className="border p-2 rounded w-full sm:w-auto"
                     >
                         <option value="">Filter Price Range</option>
                         <option value="0-100">₹0 - ₹100</option>
@@ -209,18 +214,12 @@ if (showtimes.length === 0) {
                     <select
                         value={showTimings}
                         onChange={(e) => setShowTimings(e.target.value)}
-                        className="border p-2 rounded"
+                        className="border p-2 rounded w-full sm:w-auto"
                     >
                         <option value="">{getTimingLabel("")}</option>
-                        <option value="morning">
-                            {getTimingLabel("morning")}
-                        </option>
-                        <option value="afternoon">
-                            {getTimingLabel("afternoon")}
-                        </option>
-                        <option value="evening">
-                            {getTimingLabel("evening")}
-                        </option>
+                        <option value="morning">{getTimingLabel("morning")}</option>
+                        <option value="afternoon">{getTimingLabel("afternoon")}</option>
+                        <option value="evening">{getTimingLabel("evening")}</option>
                         <option value="night">{getTimingLabel("night")}</option>
                     </select>
                     <input
@@ -228,62 +227,61 @@ if (showtimes.length === 0) {
                         placeholder="Search theaters..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="border p-2 rounded"
+                        className="border p-2 rounded w-full sm:w-auto"
                     />
                 </div>
             </div>
-            <div className="bg-[#f2f2f2] py-10 px-20">
-         { filteredGroupedShowtimes.length>0 ? ( <div className="px-2 mb-4 flex items-center">
-        <span className="mr-4 flex items-center">
-          <span className="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
-          Available
-        </span>
-        <span className="flex items-center">
-          <span className="w-3 h-3 bg-red-500 rounded-full mr-2"></span>
-          Not Available
-        </span>
-      </div> ) : ("")}  
+
+            {/* Showtimes Section - Responsive */}
+            <div className="bg-[#f2f2f2] py-6 md:py-8 lg:py-10 px-4 md:px-12 lg:px-20">
+                {filteredGroupedShowtimes.length > 0 ? (
+                    <div className="px-2 mb-4 flex items-center">
+                        <span className="mr-4 flex items-center">
+                            <span className="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                            Available
+                        </span>
+                        <span className="flex items-center">
+                            <span className="w-3 h-3 bg-red-500 rounded-full mr-2"></span>
+                            Not Available
+                        </span>
+                    </div>
+                ) : null}
+
                 {filteredGroupedShowtimes.length > 0 ? (
                     filteredGroupedShowtimes.map(({ theater, showtimes }) => (
                         <div
                             key={theater._id}
                             className="mb-8 bg-white rounded-lg overflow-hidden"
                         >
-                            <div className="px-6 py-4 border-b">
-                                <h2 className="text-lg font-semibold">
+                            <div className="px-4 md:px-6 py-4 border-b">
+                                <h2 className="text-base md:text-lg font-semibold">
                                     {theater.name}, {theater.location}
                                 </h2>
                             </div>
-                            <div className="p-6 flex flex-wrap gap-4">
+                            <div className="p-4 md:p-6 flex flex-wrap gap-2 md:gap-4">
                                 {showtimes.map((showtime) => (
-                                    <button 
-                                    onClick={() => handleShowtimeClick(showtime._id)}
+                                    <button
+                                        onClick={() => handleShowtimeClick(showtime._id)}
                                         key={showtime._id}
-                                        className={`px-4 py-2 border rounded text-center ${
+                                        className={`px-3 md:px-4 py-2 border rounded text-center min-w-[90px] md:min-w-[100px] ${
                                             showtime.availableSeats > 0
                                                 ? "bg-green-100 hover:bg-green-200"
                                                 : "bg-red-100 hover:bg-red-200"
                                         }`}
                                         disabled={showtime.availableSeats === 0}
                                     >
-                                        <div>
-                                            {new Date(
-                                                showtime.startTime
-                                            ).toLocaleTimeString([], {
+                                        <div className="text-sm md:text-base">
+                                            {new Date(showtime.startTime).toLocaleTimeString([], {
                                                 hour: "2-digit",
                                                 minute: "2-digit",
                                             })}
                                         </div>
-                                        <div className="text-xs">
-                                            ₹{showtime.price}
-                                        </div>
-                                        <div className="text-xs">
-                                            {showtime.availableSeats} seats
-                                        </div>
+                                        <div className="text-xs">₹{showtime.price}</div>
+                                        <div className="text-xs">{showtime.availableSeats} seats</div>
                                     </button>
                                 ))}
                             </div>
-                            <div className="px-6 py-2 text-sm text-gray-500">
+                            <div className="px-4 md:px-6 py-2 text-xs md:text-sm text-gray-500">
                                 {showtimes[0].isCancellable
                                     ? "Cancellation Available"
                                     : "Non-cancellable"}
@@ -291,19 +289,22 @@ if (showtimes.length === 0) {
                         </div>
                     ))
                 ) : (
-                    <div className="text-center py-10">
+                    <div className="text-center py-8 md:py-10">
                         No showtimes available for the selected filters.
                     </div>
                 )}
             </div>
+
             {ticketModal.isOpen && (
-        <TicketQuantityModal
-          onClose={handleCloseModal}
-          onSubmit={handleTicketQuantitySubmit}
-        />
-      )}
+                <TicketQuantityModal
+                    onClose={handleCloseModal}
+                    onSubmit={handleTicketQuantitySubmit}
+                />
+            )}
         </div>
     );
 };
+
+
 
 export default BookingPage;

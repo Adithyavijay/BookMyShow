@@ -169,7 +169,7 @@ const SeatSelection: React.FC<SeatSelectionProps> = ({ showtimeId, quantity }) =
     const rows = 'ABCDEFGHIJ';
     return rows.split('').map((row, rowIndex) => (
       <div key={row} className="flex mb-2 items-center">
-        <div className="w-8 h-8 flex items-center justify-center text-sm font-semibold bg-gray-200 rounded-full mr-2">{row}</div>
+        <div className="w-8 h-8  flex items-center justify-center text-sm font-semibold bg-gray-200 rounded-full mr-2">{row}</div>
         {[...Array(10)].map((_, colIndex) => {
           const seatNumber = `${row}${colIndex + 1}`;
           const seat = seats.find(s => s.seatNumber === seatNumber);
@@ -179,7 +179,7 @@ const SeatSelection: React.FC<SeatSelectionProps> = ({ showtimeId, quantity }) =
           return (
             <button
               key={seatNumber}
-              className={`w-8 h-8 m-1 rounded-t-lg ${
+              className={`w-6 h-6 md:w-8 md:h-8 m-1 rounded-t-lg ${
                 isDisabled ? 'bg-gray-300 cursor-not-allowed' :
                 isSelected ? 'bg-green-500 text-white' : 'bg-blue-200 hover:bg-blue-300'
               } transition-colors duration-200 ease-in-out text-xs font-medium`}
@@ -203,7 +203,7 @@ const SeatSelection: React.FC<SeatSelectionProps> = ({ showtimeId, quantity }) =
   }
 
   return (
-    <div className="p-4 relative pb-20">
+    <div className="p-4 relative pb-16">
           <Toaster position="top-center" reverseOrder={false} />
       <h2 className="text-2xl font-bold mb-4">Select Your Seats</h2>
       <div className="mb-4">
