@@ -11,10 +11,11 @@ const movieSchema = new mongoose.Schema({
   duration: { type: Number, required: true }, // in minutes
   genre: { type: String, required: true },
   language: { type: String, required: true },
+  upcoming : { type : Boolean , required : true},
   releaseDate: { type: String, required: true },
   certificate: { type: String, required: true }, // New field for certificate
   photos: [{ type: String }], // URLs to photos
-  poster: { type: String, required: true }, // URL to poster
+  poster: { type: String}, // URL to poster
   director: { type: String, required: true },
   cast: [castMemberSchema],
   theaters : [ { type : mongoose.Schema.Types.ObjectId,ref: 'Theater'}],

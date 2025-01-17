@@ -18,6 +18,7 @@ interface Movie {
   releaseDate: number;
   director: string;
   poster: string;
+  upcoming: boolean;
   photos: string[];
 }
 
@@ -190,8 +191,9 @@ const Movies: React.FC = () => {
                       alt={movie.title}
                       layout="fill"
                       objectFit="cover"
-                    />
-                  </div>
+                    /> 
+                  { movie.upcoming && (<div className="absolute bg-red-600 px-2 rounded-lg text-white font-poppins bottom-2 left-[6px] text-sm ">Upcoming</div>)}
+                  </div> 
                 </td>
                 <td className="p-3">{movie.title}</td>
                 <td className="p-3">{movie.genre}</td>

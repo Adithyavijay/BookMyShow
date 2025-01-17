@@ -13,6 +13,7 @@ export const formatMovie = (movie) => {
         language: movie.language,
         releaseDate: movie.releaseDate,
         certificate: movie.certificate,
+        upcoming : movie.upcoming,
         photos: movie.photos,
         poster: movie.poster,
         director: movie.director,

@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { FaSortAmountDown, FaLanguage } from 'react-icons/fa';
 import { MdTheaters } from 'react-icons/md';
 import { ApiResponse } from '../types/types';
+import { ClipLoader } from 'react-spinners';
 
 const Movies: React.FC = () => {  
     const [movies, setMovies] = useState<Movie[]>([]);
@@ -42,6 +43,7 @@ const Movies: React.FC = () => {
     }
 
     const filteredAndSortedMovies = movies
+        .filter(movie=> !movie.upcoming)
         .filter(movie => selectedGenre ? movie.genre === selectedGenre : true)
         .filter(movie => selectedLanguage ? movie.language === selectedLanguage : true)
         .sort((a, b) => {
@@ -50,6 +52,14 @@ const Movies: React.FC = () => {
             }
             return 0;
         });
+
+        if (movies.length===0) {
+            return (
+                <div className="flex justify-center items-center min-h-[70vh]">
+                    <ClipLoader color="#f84464" size={50} />
+                </div>
+            );
+        } 
 
     return (
         <div className="px-4 py-8 lg:px-[6rem]">
@@ -98,7 +108,7 @@ const Movies: React.FC = () => {
 
             {/* Movie Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-                {filteredAndSortedMovies.map((movie) => (
+                {filteredAndSortedMovies.map((movie) => ( 
                     <div key={movie._id} className="flex flex-col">
                         <div onClick={() => handleClick(movie._id)} className="relative h-80 mb-2 rounded-lg overflow-hidden shadow-lg cursor-pointer hover:scale-105 transition-all">
                             <Image  

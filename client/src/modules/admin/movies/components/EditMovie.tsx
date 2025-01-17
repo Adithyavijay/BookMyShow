@@ -1,8 +1,8 @@
-'use client';
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import AddCast from './AddCast';
-import { MovieFormData, CastMember, Theater } from '../types/types';
+"use client";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import AddCast from "./AddCast";
+import { MovieFormData, CastMember, Theater } from "../types/types";
 
 interface EditMovieProps {
   isOpen: boolean;
@@ -11,28 +11,32 @@ interface EditMovieProps {
   movieId: string;
 }
 
-const EditMovie: React.FC<EditMovieProps> = ({ isOpen, onClose, onEditMovie, movieId }) => {
+const EditMovie: React.FC<EditMovieProps> = ({
+  isOpen,
+  onClose,
+  onEditMovie,
+  movieId,
+}) => {
   const [formData, setFormData] = useState<MovieFormData>({
-    title: '',
-    description: '',
-    duration: '',
-    genre: '',
-    language: '',
-    releaseDate: '',
+    title: "",
+    description: "",
+    duration: "",
+    genre: "",
+    language: "",
+    releaseDate: "",
     cast: [],
+    upcoming: false,
     theaters: [],
-    director: '',
+    director: "",
     poster: null,
     photos: [],
-    certificate: '',
-  }); 
-  
+    certificate: "",
+  });
 
   const [isAddCastOpen, setIsAddCastOpen] = useState(false);
   const [theaters, setTheaters] = useState<Theater[]>([]);
   const api = process.env.API_BASE_URL;
-  const URL = process.env.BASE_URL;
-  
+
   useEffect(() => {
     if (isOpen && movieId) {
       fetchMovieData();
@@ -45,7 +49,7 @@ const EditMovie: React.FC<EditMovieProps> = ({ isOpen, onClose, onEditMovie, mov
       const response = await axios.get(`${api}/admin/movies/${movieId}`);
       setFormData(response.data.data);
     } catch (error) {
-      console.error('Error fetching movie data:', error);
+      console.error("Error fetching movie data:", error);
     }
   };
 
@@ -54,39 +58,46 @@ const EditMovie: React.FC<EditMovieProps> = ({ isOpen, onClose, onEditMovie, mov
       const response = await axios.get(`${api}/admin/get-theaters`);
       setTheaters(response.data.data);
     } catch (error) {
-      console.error('Error fetching theaters:', error);
+      console.error("Error fetching theaters:", error);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, files } = e.target;
     if (files) {
-      if (name === 'poster') {
-        setFormData(prev => ({ ...prev, [name]: files[0] }));
-      } else if (name === 'photos') {
-        setFormData(prev => ({ ...prev, [name]: Array.from(files) }));
+      if (name === "poster") {
+        setFormData((prev) => ({ ...prev, [name]: files[0] }));
+      } else if (name === "photos") {
+        setFormData((prev) => ({ ...prev, [name]: Array.from(files) }));
       }
     }
   };
 
   const handleTheaterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const theaterId = e.target.value;
-    setFormData(prev => {
+    setFormData((prev) => {
       if (e.target.checked) {
         return { ...prev, theaters: [...prev.theaters, theaterId] };
       } else {
-        return { ...prev, theaters: prev.theaters.filter(id => id !== theaterId) };
+        return {
+          ...prev,
+          theaters: prev.theaters.filter((id) => id !== theaterId),
+        };
       }
     });
   };
 
   const handleAddCast = (castMembers: CastMember[]): void => {
-    setFormData(prev => ({ ...prev, cast: castMembers }));
+    setFormData((prev) => ({ ...prev, cast: castMembers }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -103,18 +114,24 @@ const EditMovie: React.FC<EditMovieProps> = ({ isOpen, onClose, onEditMovie, mov
         <h2 className="text-xl font-bold p-4 border-b">Edit Movie</h2>
         <form onSubmit={handleSubmit} className="flex-grow overflow-y-auto p-4">
           {[
-            { name: 'title', label: 'Title', type: 'text' },
-            { name: 'description', label: 'Description', type: 'textarea' },
-            { name: 'duration', label: 'Duration (in minutes)', type: 'number' },
-            { name: 'genre', label: 'Genre', type: 'text' },
-            { name: 'language', label: 'Language', type: 'text' },
-            { name: 'releaseDate', label: 'Release Date', type: 'date' },
-            { name: 'director', label: 'Director', type: 'text' },
-            { name: 'certificate', label: 'Certificate', type: 'text' },
+            { name: "title", label: "Title", type: "text" },
+            { name: "description", label: "Description", type: "textarea" },
+            {
+              name: "duration",
+              label: "Duration (in minutes)",
+              type: "number",
+            },
+            { name: "genre", label: "Genre", type: "text" },
+            { name: "language", label: "Language", type: "text" },
+            { name: "releaseDate", label: "Release Date", type: "date" },
+            { name: "director", label: "Director", type: "text" },
+            { name: "certificate", label: "Certificate", type: "text" },
           ].map((field) => (
             <div key={field.name} className="mb-4">
-              <label htmlFor={field.name} className="block mb-2 font-bold">{field.label}</label>
-              {field.type === 'textarea' ? (
+              <label htmlFor={field.name} className="block mb-2 font-bold">
+                {field.label}
+              </label>
+              {field.type === "textarea" ? (
                 <textarea
                   id={field.name}
                   name={field.name}
@@ -150,17 +167,18 @@ const EditMovie: React.FC<EditMovieProps> = ({ isOpen, onClose, onEditMovie, mov
             initialCast={formData.cast}
           />
 
-
           <div className="mb-4">
-            <label htmlFor='theaters' className='block mb-2 font-bold'>Theatres</label>
-            {theaters.map(theater => (
-              <div key={theater._id} className='flex mb-2'>
+            <label htmlFor="theaters" className="block mb-2 font-bold">
+              Theatres
+            </label>
+            {theaters.map((theater) => (
+              <div key={theater._id} className="flex mb-2">
                 <input
                   type="checkbox"
                   value={theater._id}
                   checked={formData.theaters.includes(theater._id)}
                   onChange={handleTheaterChange}
-                  className='mr-2'
+                  className="mr-2"
                 />
                 <label htmlFor={`theater-${theater._id}`}>{theater.name}</label>
               </div>
@@ -168,7 +186,9 @@ const EditMovie: React.FC<EditMovieProps> = ({ isOpen, onClose, onEditMovie, mov
           </div>
 
           <div className="mb-4">
-            <label htmlFor="poster" className="block mb-2 font-bold">Poster</label>
+            <label htmlFor="poster" className="block mb-2 font-bold">
+              Poster
+            </label>
             <input
               type="file"
               id="poster"
@@ -177,13 +197,19 @@ const EditMovie: React.FC<EditMovieProps> = ({ isOpen, onClose, onEditMovie, mov
               accept="image/*"
               className="w-full p-2 border rounded"
             />
-            {formData.poster && typeof formData.poster === 'string' && (
-              <img src={`http://localhost:5000${formData.poster}`} alt="Current poster" className="mt-2 w-32 h-auto" />
+            {formData.poster && typeof formData.poster === "string" && (
+              <img
+                src={`${process.env.BASE_URL}${formData.poster}`}
+                alt="Current poster"
+                className="mt-2 w-32 h-auto"
+              />
             )}
           </div>
 
           <div className="mb-4">
-            <label htmlFor="photos" className="block mb-2 font-bold">Photos</label>
+            <label htmlFor="photos" className="block mb-2 font-bold">
+              Photos
+            </label>
             <input
               type="file"
               id="photos"
@@ -195,18 +221,84 @@ const EditMovie: React.FC<EditMovieProps> = ({ isOpen, onClose, onEditMovie, mov
             />
             {formData.photos && formData.photos.length > 0 && (
               <div className="mt-2 flex flex-wrap">
-                {formData.photos.map((photo, index) => (
-                  typeof photo === 'string' && (
-                    <img key={index} src={"http://localhost:5000"+photo} alt={`Movie photo ${index + 1}`} className="w-16 h-16 object-cover m-1" />
-                  )
-                ))}
+                {formData.photos.map(
+                  (photo, index) =>
+                    typeof photo === "string" && (
+                      <img
+                        key={index}
+                        src={`${process.env.BASE_URL}` + photo}
+                        alt={`Movie photo ${index + 1}`}
+                        className="w-16 h-16 object-cover m-1"
+                      />
+                    )
+                )}
               </div>
             )}
           </div>
+          <div className="mb-4">
+            <label
+              htmlFor="upcoming"
+              className="mb-0 mr-5 font-bold text-gray-700"
+            >
+              Upcoming:
+            </label>
+            <div className="relative inline-block">
+              <select
+                name="upcoming"
+                id="upcoming"
+                className="appearance-none w-32 p-2.5 pl-4 pr-10 bg-white rounded-lg 
+        border border-gray-200 hover:border-gray-300 
+        shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 
+        transition-all duration-200 cursor-pointer text-gray-700 font-medium"
+                value={formData.upcoming ? "true" : "false"}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    upcoming: e.target.value === "true",
+                  }))
+                }
+                required
+              >
+                <option value="true" className="py-2">
+                  Upcoming
+                </option>
+                <option value="false" className="py-2">
+                  Current
+                </option>
+              </select>
+              {/* Custom dropdown arrow */}
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <svg
+                  className="w-5 h-5 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
 
           <div className="flex justify-end p-4 border-t">
-            <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2">Update Movie</button>
-            <button type="button" onClick={onClose} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">Cancel</button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2"
+            >
+              Update Movie
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            >
+              Cancel
+            </button>
           </div>
         </form>
       </div>

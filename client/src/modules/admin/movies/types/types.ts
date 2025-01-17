@@ -11,6 +11,7 @@ export interface CastMember {
     duration: string;
     genre: string;
     language: string;
+    upcoming : boolean,
     theaters: string[];
     releaseDate: string;
     cast: CastMember[];

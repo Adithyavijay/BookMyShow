@@ -16,7 +16,7 @@ const MovieBanner = () => {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prevSlide) => (prevSlide + 1) % banners.length);
-    }, 5000);
+    }, 2000);
 
     return () => clearInterval(timer);
   }, []);

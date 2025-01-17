@@ -29,6 +29,7 @@ type CastMember = {
     releaseDate: string;
     certificate: string;
     photos: string[];
+    upcoming:boolean;
     poster: string;
     director: string;
     cast: CastMember[];
